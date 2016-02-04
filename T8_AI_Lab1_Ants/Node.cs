@@ -21,16 +21,10 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         public int CanvasIdx;
 
-        public bool IsEnabled = true;
-
         /// <summary>
         /// Contains indexes of nodes
         /// </summary>
         public readonly List<int> ConnectedWith = new List<int>();
-        /// <summary>
-        /// Contains indexes of lines
-        /// </summary>
-        public readonly List<int> ConnectedBy = new List<int>();
 
       
         /// <summary>
