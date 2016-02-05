@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Microsoft.VisualStudio.Modeling.Diagrams;
 
 namespace T8_AI_Lab1_Ants
 {
@@ -11,15 +12,12 @@ namespace T8_AI_Lab1_Ants
     /// </summary>
     public partial class MainWindow
     {
-        private readonly SolidColorBrush _brushPressedButton = new SolidColorBrush(Color.FromRgb(196, 229, 246));
-        private readonly SolidColorBrush _brushDisabled = Brushes.IndianRed;
-        private readonly SolidColorBrush _brushActive = Brushes.Red;
         private readonly SolidColorBrush _brushBlack = Brushes.Black;
         private readonly SolidColorBrush _brushWhite = Brushes.White;
-        private readonly SolidColorBrush _brushGrey = Brushes.LightGray;
 
         private const int NodeFontSize = 20;
-        private Graph _graph = new Graph();
+        private readonly Graph _graph = new Graph();
+        private readonly Random _rand = new Random();
 
 
 
@@ -69,6 +67,12 @@ namespace T8_AI_Lab1_Ants
             for (var i = 0; i < _graph.Nodes.Count; i++)
                 foreach (var t in _graph.Nodes[i].ConnectedWith)
                     ConnectNotVisual(i, t);
+
+            for (var i = 0; i < _graph.Nodes.Count; i++)
+            {
+                _graph.Nodes[i].ColorNumber = _rand.Next(_graph.ChromaticNumber);
+                FillNode(i, new SolidColorBrush(GetColor(_graph.Nodes[i].ColorNumber)));
+            }
         }
 
         private void AddNotVisual(Point pos, int idx)
@@ -122,5 +126,28 @@ namespace T8_AI_Lab1_Ants
             Panel.SetZIndex(CanvasMain.Children[CanvasMain.Children.Count - 1], 1);
         }
 
+        private void FillNode(int nodeIdx, Brush color)
+        {
+            var grid = (Grid)CanvasMain.Children[_graph.Nodes[nodeIdx].CanvasIdx];
+            var nodeGray = (Ellipse)grid.Children[0];
+            nodeGray.Fill = color;
+            grid.Children[0] = nodeGray;
+        }
+
+        /// <summary>
+        /// Calculates color
+        /// </summary>
+        /// <param name="number">Number from set</param>
+        /// <returns>Color with number</returns>
+        private Color GetColor(int number)
+        {
+            var dColor = new HslColor(number * 239 / _graph.ChromaticNumber, 240, 100).ToRgbColor();
+            return Color.FromArgb(dColor.A, dColor.R, dColor.G, dColor.B);
+        }
+
+        private void ButtonColor_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

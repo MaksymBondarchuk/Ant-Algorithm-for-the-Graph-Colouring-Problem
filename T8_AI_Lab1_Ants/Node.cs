@@ -26,6 +26,9 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         public readonly List<int> ConnectedWith = new List<int>();
 
+
+        public int ColorNumber;
+        public int ConflictsNumber;
       
         /// <summary>
         /// Checks if p is point of node
