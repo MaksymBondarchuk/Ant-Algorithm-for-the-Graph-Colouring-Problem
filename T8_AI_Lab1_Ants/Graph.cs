@@ -81,6 +81,7 @@ namespace T8_AI_Lab1_Ants
                         ants[i] = maxi;
                     else
                         ants[i] = Nodes[ants[i]].ConnectedWith[_rand.Next(Nodes[ants[i]].ConnectedWith.Count)];
+                    RecolorNode(ants[i]);
                 }
 
                 iter++;
@@ -97,15 +98,41 @@ namespace T8_AI_Lab1_Ants
             foreach (var node in Nodes)
             {
                 node.ConflictsNumber = 0;
+                // ReSharper disable once UnusedVariable
                 foreach (var neighborIdx in
                         node.ConnectedWith.Where(neighborIdx => Nodes[neighborIdx].ColorNumber == node.ColorNumber))
                     node.ConflictsNumber++;
             }
         }
 
+        public int GetConflictsForNode(int idx)
+        {
+            var node = Nodes[idx];
+            //node.ConflictsNumber = 0;
+            // ReSharper disable once UnusedVariable
+            return node.ConnectedWith.Count(neighborIdx => Nodes[neighborIdx].ColorNumber == node.ColorNumber);
+        }
+
         public void RecolorNode(int idx)
         {
-            
+            //var currColor = Nodes[idx].ColorNumber;
+            var min = Nodes[idx].ConflictsNumber;
+            var minColor = Nodes[idx].ColorNumber;
+            for (var color = 0; color < ChromaticNumber; color++)
+            {
+                Nodes[idx].ColorNumber = color;
+                var conflicts = GetConflictsForNode(idx);
+                if (conflicts < min)
+                {
+                    min = conflicts;
+                    minColor = color;
+                }
+            }
+            Nodes[idx].ColorNumber = minColor;
+            Nodes[idx].ConflictsNumber = min;
+
+            foreach (var neighbor in Nodes[idx].ConnectedWith)
+                Nodes[neighbor].ConflictsNumber = GetConflictsForNode(neighbor);
         }
     }
 }
