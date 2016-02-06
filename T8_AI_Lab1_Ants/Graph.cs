@@ -3,16 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using T7_Course;
 
 namespace T8_AI_Lab1_Ants
 {
     public class Graph
     {
         public readonly List<Node> Nodes = new List<Node>();
+        public readonly List<Connection> Connections = new List<Connection>();
         public int ChromaticNumber;
         private readonly Random _rand = new Random();
         public const int M = 1;
+        public int Iterations;
+        public int AntsNumber;
+        public readonly List<int> Ants = new List<int>();
 
+        /// <summary>
+        /// Reads graph from file
+        /// </summary>
+        /// <param name="fileName">Mame of file</param>
         public void ParseFile(string fileName)
         {
             var m1 = Regex.Match(fileName, @".([\d]+)\.col$");
@@ -23,6 +32,9 @@ namespace T8_AI_Lab1_Ants
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
+                    if (line.Length == 0)
+                        continue;
+
                     if (line[0] == 'p')
                     {
                         var nodesNumber = Convert.ToInt32(Regex.Match(line, @"\d+").Value);
@@ -47,45 +59,57 @@ namespace T8_AI_Lab1_Ants
             }
         }
 
-        public void Color(int antsNumber)
+        /// <summary>
+        /// Colors graph
+        /// </summary>
+        public void Color()
         {
-            var ants = new List<int>();
-            for (var i = 0; i < antsNumber; i++)
-                ants.Add(_rand.Next(Nodes.Count));
+            PrepareToColor();
+            
+            do OneIteration();
+            while (!IsColored());
+        }
 
-            var iter = 0;
-            do
+        public void OneIteration()
+        {
+            for (var i = 0; i < Ants.Count; i++)
             {
-                for (var i = 0; i < ants.Count; i++)
+                if (Nodes[Ants[i]].ConnectedWith.Count == 0)
+                    continue;
+
+                var maxi = 0;
+                // ReSharper disable once IdentifierTypo
+                var confsoverall = 0;
+                for (var j = 1; j < Nodes[Ants[i]].ConnectedWith.Count; j++)
+                //foreach (var neighbor in Nodes[ants[i]].ConnectedWith)
                 {
-                    if (Nodes[ants[i]].ConnectedWith.Count == 0)
-                        continue;
+                    var neighbor = Nodes[Ants[i]].ConnectedWith[j];
+                    confsoverall += Nodes[neighbor].ConflictsNumber;
 
-                    var maxi = 0;
-                    // ReSharper disable once IdentifierTypo
-                    var confsoverall = 0;
-                    for (var j = 1; j < Nodes[ants[i]].ConnectedWith.Count; j++)
-                    //foreach (var neighbor in Nodes[ants[i]].ConnectedWith)
-                    {
-                        var neighbor = Nodes[ants[i]].ConnectedWith[j];
-                        confsoverall += Nodes[neighbor].ConflictsNumber;
-
-                        if (Nodes[maxi].ConflictsNumber < Nodes[neighbor].ConflictsNumber)
-                            maxi = neighbor;
-                    }
-                    
-                    // ReSharper disable once IdentifierTypo
-                    var maxconf = ants[maxi];
-                    var p = M * maxconf * 100 / confsoverall;
-                    if (_rand.Next(101) < p)
-                        ants[i] = maxi;
-                    else
-                        ants[i] = Nodes[ants[i]].ConnectedWith[_rand.Next(Nodes[ants[i]].ConnectedWith.Count)];
-                    RecolorNode(ants[i]);
+                    if (Nodes[maxi].ConflictsNumber < Nodes[neighbor].ConflictsNumber)
+                        maxi = neighbor;
                 }
 
-                iter++;
-            } while (!IsColored());
+                // ReSharper disable once IdentifierTypo
+                var maxconf = Nodes[maxi].ConflictsNumber;
+                var p = confsoverall != 0 ? M * maxconf * 100 / confsoverall : 0;
+                if (_rand.Next(101) < p)
+                    Ants[i] = maxi;
+                else
+                    Ants[i] = Nodes[Ants[i]].ConnectedWith[_rand.Next(Nodes[Ants[i]].ConnectedWith.Count)];
+                RecolorNode(Ants[i]);
+            }
+            Iterations++;
+        }
+
+        public void PrepareToColor()
+        {
+            UpdateConflicts();
+
+            Ants.Clear();
+            for (var i = 0; i < AntsNumber; i++)
+                Ants.Add(_rand.Next(Nodes.Count));
+            Iterations = 0;
         }
 
         public bool IsColored()

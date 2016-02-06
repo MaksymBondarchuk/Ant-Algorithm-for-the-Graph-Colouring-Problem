@@ -15,7 +15,11 @@ namespace T8_AI_Lab1_Ants
         /// <summary>
         /// Size in pixels
         /// </summary>
-        public const int NodeSize = 50;
+        public const int NodeSize = 100;
+        /// <summary>
+        /// Font size in pixels
+        /// </summary>
+        public const int NodeFontSize = 15;
         /// <summary>
         /// Node index in Canvas.Children
         /// </summary>
@@ -25,6 +29,11 @@ namespace T8_AI_Lab1_Ants
         /// Contains indexes of nodes
         /// </summary>
         public readonly List<int> ConnectedWith = new List<int>();
+
+        /// <summary>
+        /// Contains indexes of lines
+        /// </summary>
+        public readonly List<int> ConnectedBy = new List<int>();
 
 
         public int ColorNumber;

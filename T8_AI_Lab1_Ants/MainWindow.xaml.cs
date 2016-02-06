@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.Modeling.Diagrams;
+using Microsoft.Win32;
+using T7_Course;
 
 namespace T8_AI_Lab1_Ants
 {
@@ -14,10 +17,12 @@ namespace T8_AI_Lab1_Ants
     {
         private readonly SolidColorBrush _brushBlack = Brushes.Black;
         private readonly SolidColorBrush _brushWhite = Brushes.White;
+        private readonly SolidColorBrush _brushGrey = Brushes.LightGray;
 
-        private const int NodeFontSize = 20;
         private readonly Graph _graph = new Graph();
         private readonly Random _rand = new Random();
+
+        private int _onNode = -1;
 
 
 
@@ -28,7 +33,7 @@ namespace T8_AI_Lab1_Ants
 
         private void buttonOpenFile_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new Microsoft.Win32.OpenFileDialog
+            var dlg = new OpenFileDialog
             {
                 DefaultExt = ".col",
                 Filter = "Collection File (.col)|*.col"
@@ -44,6 +49,8 @@ namespace T8_AI_Lab1_Ants
                 var filename = dlg.FileName;
                 _graph.ParseFile(filename);
                 DrawGraph();
+                _graph.AntsNumber = _graph.Nodes.Count / 3;
+                TextBoxAntsNumber.Text = _graph.AntsNumber.ToString();
             }
 
         }
@@ -51,6 +58,8 @@ namespace T8_AI_Lab1_Ants
         private void DrawGraph()
         {
             var n = Convert.ToInt32(Math.Ceiling(Math.Sqrt(_graph.Nodes.Count)));
+            if (_graph.Nodes.Count == 8)
+                n = 4;
             //n = Convert.ToInt32(n * 1.5);
 
             var width = (WindowMain.ActualWidth - 75) / n;
@@ -68,6 +77,11 @@ namespace T8_AI_Lab1_Ants
                 foreach (var t in _graph.Nodes[i].ConnectedWith)
                     ConnectNotVisual(i, t);
 
+            RecolorNodes();
+        }
+
+        private void RecolorNodes()
+        {
             for (var i = 0; i < _graph.Nodes.Count; i++)
             {
                 _graph.Nodes[i].ColorNumber = _rand.Next(_graph.ChromaticNumber);
@@ -90,7 +104,7 @@ namespace T8_AI_Lab1_Ants
                 Width = Node.NodeSize,
                 StrokeThickness = 2,
                 Stroke = _brushBlack,
-                Fill = _brushWhite,
+                Fill = _brushWhite
             };
             grid.Children.Add(circle);
 
@@ -99,7 +113,7 @@ namespace T8_AI_Lab1_Ants
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextAlignment = TextAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                FontSize = NodeFontSize,
+                FontSize = Node.NodeFontSize,
                 Text = (idx + 1).ToString()
             };
             grid.Children.Add(textBlock);
@@ -124,6 +138,21 @@ namespace T8_AI_Lab1_Ants
 
             CanvasMain.Children.Add(conn);
             Panel.SetZIndex(CanvasMain.Children[CanvasMain.Children.Count - 1], 1);
+
+            _graph.Connections.Add(new Connection
+            {
+                P1 = _graph.Nodes[idx1].Location,
+                Node1 = idx1,
+                P2 = _graph.Nodes[idx2].Location,
+                Node2 = idx2,
+                CanvasIdx = CanvasMain.Children.Count - 1
+            });
+
+            //_graph.Nodes[idx1].ConnectedWith.Add(idx2);
+            _graph.Nodes[idx1].ConnectedBy.Add(_graph.Connections.Count - 1);
+            //_graph.Nodes[idx2].ConnectedWith.Add(idx1);
+            _graph.Nodes[idx2].ConnectedBy.Add(_graph.Connections.Count - 1);
+
         }
 
         private void FillNode(int nodeIdx, Brush color)
@@ -131,7 +160,6 @@ namespace T8_AI_Lab1_Ants
             var grid = (Grid)CanvasMain.Children[_graph.Nodes[nodeIdx].CanvasIdx];
             var nodeGray = (Ellipse)grid.Children[0];
             nodeGray.Fill = color;
-            grid.Children[0] = nodeGray;
         }
 
         /// <summary>
@@ -147,7 +175,107 @@ namespace T8_AI_Lab1_Ants
 
         private void ButtonColor_Click(object sender, RoutedEventArgs e)
         {
+            _graph.Color();
+            RecolorNodes();
+            MessageBox.Show("Done");
+        }
 
+        private void TextBoxAntsNumber_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            int result;
+            e.Handled = !int.TryParse(e.Text, out result);
+        }
+
+        private void WindowMain_MouseMove(object sender, MouseEventArgs e)
+        {
+            var mousePos = Mouse.GetPosition(CanvasMain);
+
+            if (Mouse.LeftButton == MouseButtonState.Pressed && _onNode != -1)
+            {
+                Panel.SetZIndex(CanvasMain.Children[_graph.Nodes[_onNode].CanvasIdx], 4);
+                MoveNode(mousePos);
+            }
+
+            for (var i = 0; i < _graph.Nodes.Count; i++)
+                FillNode(i,
+                    _graph.Nodes[i].IsMyPoint(mousePos)
+                        ? _brushGrey
+                        : new SolidColorBrush(GetColor(_graph.Nodes[i].ColorNumber)));
+        }
+
+        private void WindowMain_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            for (var i = 0; i < _graph.Nodes.Count; i++)
+                if (_graph.Nodes[i].IsMyPoint(Mouse.GetPosition(CanvasMain)))
+                {
+                    _onNode = i;
+                    break;
+                }
+        }
+
+        private void WindowMain_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _onNode = -1;
+        }
+
+        private void MoveNode(Point mousePos)
+        {
+            // Moving node
+            var grid = (Grid)CanvasMain.Children[_graph.Nodes[_onNode].CanvasIdx];
+            grid.Margin = new Thickness(mousePos.X - grid.Height * .5, mousePos.Y - grid.Width * .5, 0, 0);
+
+            // Moving node connections
+            foreach (var conn in _graph.Nodes[_onNode].ConnectedBy)
+                if (_graph.Nodes[_onNode].Location == _graph.Connections[conn].P1)
+                {
+                    _graph.Connections[conn].P1 = mousePos;
+
+                    var line = (Line)CanvasMain.Children[_graph.Connections[conn].CanvasIdx];
+                    line.X1 = mousePos.X;
+                    line.Y1 = mousePos.Y;
+                }
+                else if (_graph.Nodes[_onNode].Location == _graph.Connections[conn].P2)
+                {
+                    _graph.Connections[conn].P2 = mousePos;
+
+                    var line = (Line)CanvasMain.Children[_graph.Connections[conn].CanvasIdx];
+                    line.X2 = mousePos.X;
+                    line.Y2 = mousePos.Y;
+                }
+
+            _graph.Nodes[_onNode].Location = mousePos;
+        }
+
+        private void ButtonPrepare_Click(object sender, RoutedEventArgs e)
+        {
+            _graph.AntsNumber = Convert.ToInt32(TextBoxAntsNumber.Text);
+            _graph.PrepareToColor();
+            UpdateNodesInfo();
+        }
+
+        private void ButtonOneIteration_Click(object sender, RoutedEventArgs e)
+        {
+            _graph.OneIteration();
+            UpdateNodesInfo();
+            RecolorNodes();
+        }
+
+        private void UpdateNodesInfo()
+        {
+            for (var i = 0; i < _graph.Nodes.Count; i++)
+            {
+                var grid = (Grid)CanvasMain.Children[_graph.Nodes[i].CanvasIdx];
+                var textBlock = (TextBlock)grid.Children[1];
+
+                var text = $"{i} c{_graph.Nodes[i].ConflictsNumber} ";
+
+                for (var j = 0; j < _graph.Ants.Count; j++)
+                    if (_graph.Ants[j] == i)
+                        text += $"a{j} ";
+
+                //text = _graph.Ants.Where(t => t == i).Aggregate(text, (current, t) => current + $"a{i} ");
+                textBlock.Text = text;
+            }
         }
     }
 }
