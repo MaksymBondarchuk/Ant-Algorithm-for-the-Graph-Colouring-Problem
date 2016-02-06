@@ -15,7 +15,7 @@ namespace T8_AI_Lab1_Ants
         /// <summary>
         /// Size in pixels
         /// </summary>
-        public const int NodeSize = 100;
+        public const int NodeSize = 50;
         /// <summary>
         /// Font size in pixels
         /// </summary>

@@ -1,12 +1,28 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.Modeling.Diagrams;
 using Microsoft.Win32;
 using T7_Course;
+
+// For button click functions call
+namespace System.Windows.Controls
+{
+    /// <summary>
+    /// For allow perform button click 
+    /// </summary>
+    public static class MyExt
+    {
+        public static void PerformClick(this Button btn)
+        {
+            btn.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        }
+    }
+}
 
 namespace T8_AI_Lab1_Ants
 {
@@ -45,6 +61,8 @@ namespace T8_AI_Lab1_Ants
             // Process open file dialog box results
             if (result == true)
             {
+                ButtonClear.PerformClick();
+
                 // Open document
                 var filename = dlg.FileName;
                 _graph.ParseFile(filename);
@@ -70,6 +88,7 @@ namespace T8_AI_Lab1_Ants
                 var x = i % n;
                 var y = i / n;
 
+                _graph.Nodes[i].ColorNumber = _rand.Next(_graph.ChromaticNumber);
                 AddNotVisual(new Point(width * x + width * .5, height * y + height * .5), i);
             }
 
@@ -83,10 +102,7 @@ namespace T8_AI_Lab1_Ants
         private void RecolorNodes()
         {
             for (var i = 0; i < _graph.Nodes.Count; i++)
-            {
-                _graph.Nodes[i].ColorNumber = _rand.Next(_graph.ChromaticNumber);
                 FillNode(i, new SolidColorBrush(GetColor(_graph.Nodes[i].ColorNumber)));
-            }
         }
 
         private void AddNotVisual(Point pos, int idx)
@@ -258,6 +274,8 @@ namespace T8_AI_Lab1_Ants
             _graph.OneIteration();
             UpdateNodesInfo();
             RecolorNodes();
+            if (_graph.IsColored())
+                MessageBox.Show($"Done in {_graph.Iterations} iterations");
         }
 
         private void UpdateNodesInfo()
@@ -273,7 +291,6 @@ namespace T8_AI_Lab1_Ants
                     if (_graph.Ants[j] == i)
                         text += $"a{j} ";
 
-                //text = _graph.Ants.Where(t => t == i).Aggregate(text, (current, t) => current + $"a{i} ");
                 textBlock.Text = text;
             }
         }
@@ -282,6 +299,13 @@ namespace T8_AI_Lab1_Ants
         {
             CanvasMain.Children.Clear();
             _graph.Clear();
+        }
+
+        private void ButtonResetGraph_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var t in _graph.Nodes)
+                t.ColorNumber = _rand.Next(_graph.ChromaticNumber);
+            RecolorNodes();
         }
     }
 }

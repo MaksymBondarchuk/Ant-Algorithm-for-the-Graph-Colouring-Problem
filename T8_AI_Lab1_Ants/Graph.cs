@@ -65,7 +65,7 @@ namespace T8_AI_Lab1_Ants
         public void Color()
         {
             PrepareToColor();
-            
+
             do OneIteration();
             while (!IsColored());
         }
@@ -142,6 +142,7 @@ namespace T8_AI_Lab1_Ants
             //var currColor = Nodes[idx].ColorNumber;
             var min = Nodes[idx].ConflictsNumber;
             var minColor = Nodes[idx].ColorNumber;
+            var minColors = new List<int>();
             for (var color = 0; color < ChromaticNumber; color++)
             {
                 Nodes[idx].ColorNumber = color;
@@ -150,13 +151,26 @@ namespace T8_AI_Lab1_Ants
                 {
                     min = conflicts;
                     minColor = color;
-                }
-            }
-            Nodes[idx].ColorNumber = minColor;
-            Nodes[idx].ConflictsNumber = min;
 
-            foreach (var neighbor in Nodes[idx].ConnectedWith)
-                Nodes[neighbor].ConflictsNumber = GetConflictsForNode(neighbor);
+                    minColors.Clear();
+                    minColors.Add(color);
+                }
+                else if (conflicts == min)
+                    minColors.Add(color);
+            }
+
+            // For remove possible deadlocks
+            //var minColors = new List<int>();
+            //for (var color = 0; color < ChromaticNumber; color++)
+            //    if (GetConflictsForNode(idx) )
+
+            //Nodes[idx].ColorNumber = minColor;
+            Nodes[idx].ColorNumber = minColors[_rand.Next(minColors.Count)];
+            UpdateConflicts();
+            //Nodes[idx].ConflictsNumber = min;
+
+            //foreach (var neighbor in Nodes[idx].ConnectedWith)
+            //    Nodes[neighbor].ConflictsNumber = GetConflictsForNode(neighbor);
         }
 
 
