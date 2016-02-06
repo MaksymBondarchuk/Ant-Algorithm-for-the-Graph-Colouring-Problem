@@ -158,5 +158,16 @@ namespace T8_AI_Lab1_Ants
             foreach (var neighbor in Nodes[idx].ConnectedWith)
                 Nodes[neighbor].ConflictsNumber = GetConflictsForNode(neighbor);
         }
+
+
+        public void Clear()
+        {
+            Nodes.Clear();
+            Connections.Clear();
+            ChromaticNumber = 0;
+            Iterations = 0;
+            AntsNumber = 0;
+            Ants.Clear();
+        }
     }
 }

@@ -277,5 +277,11 @@ namespace T8_AI_Lab1_Ants
                 textBlock.Text = text;
             }
         }
+
+        private void ButtonClear_Click(object sender, RoutedEventArgs e)
+        {
+            CanvasMain.Children.Clear();
+            _graph.Clear();
+        }
     }
 }
