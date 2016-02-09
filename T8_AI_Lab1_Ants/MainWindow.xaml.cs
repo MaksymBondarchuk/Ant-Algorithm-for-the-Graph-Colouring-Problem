@@ -39,6 +39,7 @@ namespace T8_AI_Lab1_Ants
         private readonly Random _rand = new Random();
 
         private int _onNode = -1;
+        private bool _wasPrepared = false;
 
 
 
@@ -94,7 +95,8 @@ namespace T8_AI_Lab1_Ants
 
             for (var i = 0; i < _graph.Nodes.Count; i++)
                 foreach (var t in _graph.Nodes[i].ConnectedWith)
-                    ConnectNotVisual(i, t);
+                    if (i < t)
+                        ConnectNotVisual(i, t);
 
             RecolorNodes();
         }
@@ -267,15 +269,22 @@ namespace T8_AI_Lab1_Ants
             _graph.AntsNumber = Convert.ToInt32(TextBoxAntsNumber.Text);
             _graph.PrepareToColor();
             UpdateNodesInfo();
+            _wasPrepared = true;
         }
 
         private void ButtonOneIteration_Click(object sender, RoutedEventArgs e)
         {
+            if (!_wasPrepared)
+                ButtonPrepare.PerformClick();
+
             _graph.OneIteration();
             UpdateNodesInfo();
             RecolorNodes();
             if (_graph.IsColored())
+            {
+                _wasPrepared = false;
                 MessageBox.Show($"Done in {_graph.Iterations} iterations");
+            }
         }
 
         private void UpdateNodesInfo()
@@ -306,6 +315,16 @@ namespace T8_AI_Lab1_Ants
             foreach (var t in _graph.Nodes)
                 t.ColorNumber = _rand.Next(_graph.ChromaticNumber);
             RecolorNodes();
+        }
+
+        private void CheckBoxDebug_Checked(object sender, RoutedEventArgs e)
+        {
+            _graph.DebugMode = true;
+        }
+
+        private void CheckBoxDebug_Unchecked(object sender, RoutedEventArgs e)
+        {
+            _graph.DebugMode = false;
         }
     }
 }

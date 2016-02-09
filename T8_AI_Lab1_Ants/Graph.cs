@@ -17,6 +17,7 @@ namespace T8_AI_Lab1_Ants
         public int Iterations;
         public int AntsNumber;
         public readonly List<int> Ants = new List<int>();
+        public bool DebugMode { get; set; }
 
         /// <summary>
         /// Reads graph from file
@@ -77,13 +78,17 @@ namespace T8_AI_Lab1_Ants
                 if (Nodes[Ants[i]].ConnectedWith.Count == 0)
                     continue;
 
-                var maxi = 0;
+                var maxi = Nodes[Ants[i]].ConnectedWith[0];
                 // ReSharper disable once IdentifierTypo
                 var confsoverall = 0;
-                for (var j = 1; j < Nodes[Ants[i]].ConnectedWith.Count; j++)
-                //foreach (var neighbor in Nodes[ants[i]].ConnectedWith)
+
+                if (DebugMode)
                 {
-                    var neighbor = Nodes[Ants[i]].ConnectedWith[j];
+                    Math.Cos(5);
+                }
+
+                foreach (var neighbor in Nodes[Ants[i]].ConnectedWith)
+                {
                     confsoverall += Nodes[neighbor].ConflictsNumber;
 
                     if (Nodes[maxi].ConflictsNumber < Nodes[neighbor].ConflictsNumber)
@@ -165,7 +170,8 @@ namespace T8_AI_Lab1_Ants
             //    if (GetConflictsForNode(idx) )
 
             //Nodes[idx].ColorNumber = minColor;
-            Nodes[idx].ColorNumber = minColors[_rand.Next(minColors.Count)];
+            Nodes[idx].ColorNumber = _rand.Next(101) < 70 ? minColors[_rand.Next(minColors.Count)] 
+                : _rand.Next(ChromaticNumber);
             UpdateConflicts();
             //Nodes[idx].ConflictsNumber = min;
 
