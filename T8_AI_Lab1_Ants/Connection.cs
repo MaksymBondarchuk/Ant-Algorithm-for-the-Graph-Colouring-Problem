@@ -1,9 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//-----------------------------------------------------------------------
+// <copyright file="Connection.cs" company="NTUU 'KPI'">
+//     Copyright (c) Max Bondarchuk. All rights reserved.
+// </copyright>
+// <author>Max Bondarchuk</author>
+//-----------------------------------------------------------------------
+
+using System;
 using System.Windows;
 
-namespace T7_Course
+namespace T8_AI_Lab1_Ants
 {
+    /// <summary>
+    /// Connection on graph
+    /// </summary>
     public class Connection
     {
         /// <summary>

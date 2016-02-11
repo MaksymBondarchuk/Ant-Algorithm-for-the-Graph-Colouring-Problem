@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -7,7 +8,6 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.Modeling.Diagrams;
 using Microsoft.Win32;
-using T7_Course;
 
 // For button click functions call
 namespace System.Windows.Controls
@@ -39,9 +39,8 @@ namespace T8_AI_Lab1_Ants
         private readonly Random _rand = new Random();
 
         private int _onNode = -1;
-        private bool _wasPrepared = false;
-
-
+        private bool _wasPrepared;
+        private bool _drawGraph;
 
         public MainWindow()
         {
@@ -67,11 +66,24 @@ namespace T8_AI_Lab1_Ants
                 // Open document
                 var filename = dlg.FileName;
                 _graph.ParseFile(filename);
-                DrawGraph();
+
+                if (50 < _graph.Nodes.Count)
+                {
+                    var res = MessageBox.Show("Graph has more nodes than 50." +
+                                              "\nDo you want to draw it?" +
+                                              "\nIf no, it still will be colored.",
+                        "Graph is too big", MessageBoxButton.YesNo);
+                    _drawGraph = res == MessageBoxResult.Yes;
+                }
+                else
+                    _drawGraph = true;
+
+                if (_drawGraph)
+                    DrawGraph();
+
                 _graph.AntsNumber = _graph.Nodes.Count / 3;
                 TextBoxAntsNumber.Text = _graph.AntsNumber.ToString();
             }
-
         }
 
         private void DrawGraph()
@@ -94,9 +106,11 @@ namespace T8_AI_Lab1_Ants
             }
 
             for (var i = 0; i < _graph.Nodes.Count; i++)
-                foreach (var t in _graph.Nodes[i].ConnectedWith)
-                    if (i < t)
-                        ConnectNotVisual(i, t);
+            {
+                var i1 = i;
+                foreach (var t in _graph.Nodes[i].ConnectedWith.Where(t => i1 < t))
+                    ConnectNotVisual(i, t);
+            }
 
             RecolorNodes();
         }
@@ -194,8 +208,11 @@ namespace T8_AI_Lab1_Ants
         private void ButtonColor_Click(object sender, RoutedEventArgs e)
         {
             _graph.Color();
-            RecolorNodes();
-            MessageBox.Show("Done");
+            if (_drawGraph)
+                RecolorNodes();
+            //MessageBox.Show("Done");
+            _wasPrepared = false;
+            MessageBox.Show($"Done in {_graph.Iterations} iterations");
         }
 
         private void TextBoxAntsNumber_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -214,7 +231,8 @@ namespace T8_AI_Lab1_Ants
                 MoveNode(mousePos);
             }
 
-            for (var i = 0; i < _graph.Nodes.Count; i++)
+            if (_drawGraph)
+                for (var i = 0; i < _graph.Nodes.Count; i++)
                 FillNode(i,
                     _graph.Nodes[i].IsMyPoint(mousePos)
                         ? _brushGrey
@@ -223,7 +241,8 @@ namespace T8_AI_Lab1_Ants
 
         private void WindowMain_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            for (var i = 0; i < _graph.Nodes.Count; i++)
+            if (_drawGraph)
+                for (var i = 0; i < _graph.Nodes.Count; i++)
                 if (_graph.Nodes[i].IsMyPoint(Mouse.GetPosition(CanvasMain)))
                 {
                     _onNode = i;
@@ -268,7 +287,8 @@ namespace T8_AI_Lab1_Ants
         {
             _graph.AntsNumber = Convert.ToInt32(TextBoxAntsNumber.Text);
             _graph.PrepareToColor();
-            UpdateNodesInfo();
+            if (_drawGraph)
+                UpdateNodesInfo();
             _wasPrepared = true;
         }
 
@@ -278,8 +298,11 @@ namespace T8_AI_Lab1_Ants
                 ButtonPrepare.PerformClick();
 
             _graph.OneIteration();
-            UpdateNodesInfo();
-            RecolorNodes();
+            if (_drawGraph)
+            {
+                UpdateNodesInfo();
+                RecolorNodes();
+            }
             if (_graph.IsColored())
             {
                 _wasPrepared = false;
@@ -314,7 +337,8 @@ namespace T8_AI_Lab1_Ants
         {
             foreach (var t in _graph.Nodes)
                 t.ColorNumber = _rand.Next(_graph.ChromaticNumber);
-            RecolorNodes();
+            if (_drawGraph)
+                RecolorNodes();
         }
 
         private void CheckBoxDebug_Checked(object sender, RoutedEventArgs e)

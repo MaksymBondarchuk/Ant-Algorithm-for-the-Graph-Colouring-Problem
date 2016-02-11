@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using T7_Course;
 
 namespace T8_AI_Lab1_Ants
 {
