@@ -5,16 +5,88 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="An Ant Algorithm for the Graph Colouring Problem Solver" Height="350" Width="525" MinWidth="1280" MinHeight="720" WindowStartupLocation="CenterScreen" WindowState="Maximized" MouseMove="WindowMain_MouseMove" MouseDown="WindowMain_MouseDown" MouseUp="WindowMain_MouseUp">
+
+    <Window.Resources>
+        <Style x:Key="BaseButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Background" Value="#007acc"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="FontSize" Value="14pt"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Width" Value="140"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                SnapsToDevicePixels="true">
+                            <ContentPresenter Name="Presenter" Margin="{TemplateBinding Padding}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    RecognizesAccessKey="True"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#686868" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#3e3e42" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" Value="#50007acc" />
+                                <Setter Property="Foreground" Value="#50ffffff"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="BaseTextBoxStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="BorderThickness" Value="0,4,0,4"/>
+            <Setter Property="BorderBrush" Value="#007acc"/>
+            <Setter Property="Foreground" Value="#007acc"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#686868"/>
+                                <Setter Property="BorderBrush" Value="#686868"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="#50007acc"/>
+                                <Setter Property="BorderBrush" Value="#50007acc"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Grid>
-        <Button x:Name="ButtonOpenFile" Content="Open file" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Click="buttonOpenFile_Click" ToolTip="Select file with initial graph"/>
-        <Canvas x:Name="CanvasMain" HorizontalAlignment="Left" Height="679" VerticalAlignment="Top" Width="1167"/>
-        <Button x:Name="ButtonColor" Content="Color graph" HorizontalAlignment="Right" Margin="0,110,10,0" VerticalAlignment="Top" Width="75" Click="ButtonColor_Click" IsEnabled="False"/>
-        <TextBox x:Name="TextBoxAntsNumber" HorizontalAlignment="Right" Height="23" Margin="0,82,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" PreviewTextInput="TextBoxAntsNumber_PreviewTextInput" IsEnabled="False"/>
-        <Button x:Name="ButtonPrepare" Content="Prepare" HorizontalAlignment="Right" Margin="0,160,10,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.4,0" Click="ButtonPrepare_Click" IsEnabled="False" ToolTip="Prepera graph for coloring (for debug)"/>
-        <Button x:Name="ButtonOneIteration" Content="One iteration" HorizontalAlignment="Right" Margin="0,185,10,0" VerticalAlignment="Top" Width="75" Click="ButtonOneIteration_Click" IsEnabled="False" ToolTip="One iteration of algorithm (for debug)"/>
-        <Button x:Name="ButtonClear" Content="Clear" HorizontalAlignment="Right" Margin="0,225,10,0" VerticalAlignment="Top" Width="75" Click="ButtonClear_Click" IsEnabled="False" ToolTip="Clear graph (resets to initial point)"/>
-        <Button x:Name="ButtonResetGraph" Content="Reset graph" HorizontalAlignment="Right" Margin="0,250,10,0" VerticalAlignment="Top" Width="75" Click="ButtonResetGraph_Click" IsEnabled="False" ToolTip="Change every node color to random value"/>
-        <Label x:Name="LabelAntsNumber" Content="Ants number" HorizontalAlignment="Right" Margin="0,56,10,0" VerticalAlignment="Top" IsEnabled="False" RenderTransformOrigin="0.231,0.538"/>
+        <Button x:Name="ButtonOpenFile" Style="{StaticResource BaseButtonStyle}" Content="Open file" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Click="buttonOpenFile_Click" ToolTip="Select file with initial graph" FontSize="18.667" />
+        <Canvas x:Name="CanvasMain" HorizontalAlignment="Left" Height="679" VerticalAlignment="Top" Width="1117"/>
+        <Button x:Name="ButtonColor" Style="{StaticResource BaseButtonStyle}" Content="Color graph" HorizontalAlignment="Right" Margin="0,175,10,0" VerticalAlignment="Top" Click="ButtonColor_Click" IsEnabled="False" FontSize="18.667" />
+        <TextBox x:Name="TextBoxAntsNumber" Style="{StaticResource BaseTextBoxStyle}" HorizontalAlignment="Right" Height="45" Margin="0,125,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="140" PreviewTextInput="TextBoxAntsNumber_PreviewTextInput" IsEnabled="False" FontSize="18.667" FontWeight="Bold" VerticalContentAlignment="Center" ToolTip="Ants number" Background="#003E3E42"/>
+        <Button x:Name="ButtonPrepare" Style="{StaticResource BaseButtonStyle}" Content="Prepare" HorizontalAlignment="Right" Margin="0,270,10,0" VerticalAlignment="Top" RenderTransformOrigin="-0.4,0" Click="ButtonPrepare_Click" IsEnabled="False" ToolTip="Prepera graph for coloring (for debug)"/>
+        <Button x:Name="ButtonOneIteration" Style="{StaticResource BaseButtonStyle}" Content="One iteration" HorizontalAlignment="Right" Margin="0,320,10,0" VerticalAlignment="Top" Click="ButtonOneIteration_Click" IsEnabled="False" ToolTip="One iteration of algorithm (for debug)"/>
+        <Button x:Name="ButtonClear" Style="{StaticResource BaseButtonStyle}" Content="Clear" HorizontalAlignment="Right" Margin="0,420,10,0" VerticalAlignment="Top" Click="ButtonClear_Click" IsEnabled="False" ToolTip="Clear graph (resets to initial point)"/>
+        <Button x:Name="ButtonResetGraph" Style="{StaticResource BaseButtonStyle}" Content="Reset graph" HorizontalAlignment="Right" Margin="0,470,10,0" VerticalAlignment="Top" Click="ButtonResetGraph_Click" IsEnabled="False" ToolTip="Change every node color to random value"/>
+        <Label x:Name="LabelAntsNumber" Content="Ants number" HorizontalAlignment="Right" Margin="0,94,49,0" VerticalAlignment="Top" IsEnabled="False" RenderTransformOrigin="0.231,0.538" FontSize="16"/>
 
     </Grid>
 </Window>

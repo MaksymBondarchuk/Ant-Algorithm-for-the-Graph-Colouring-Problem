@@ -398,6 +398,7 @@ namespace T8_AI_Lab1_Ants
         {
             CanvasMain.Children.Clear();
             _graph.Clear();
+            TextBoxAntsNumber.Text = "";
 
             LabelAntsNumber.IsEnabled = false;
             TextBoxAntsNumber.IsEnabled = false;
