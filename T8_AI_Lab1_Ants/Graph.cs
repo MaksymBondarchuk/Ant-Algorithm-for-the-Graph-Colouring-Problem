@@ -9,19 +9,50 @@ namespace T8_AI_Lab1_Ants
 {
     public class Graph
     {
-        public readonly List<Node> Nodes = new List<Node>();
-        public readonly List<Connection> Connections = new List<Connection>();
-        public int ChromaticNumber;
-        private readonly Random _rand = new Random();
-        public const int M = 1;
-        public int IterationNumber = -1;
-        public int AntsNumber;
-        public readonly List<int> Ants = new List<int>();
+        /// <summary>
+        /// Constant for ant moving logic
+        /// </summary>
+        private const int M = 1;
 
+        /// <summary>
+        /// Number of iterations where were no changes
+        /// </summary>
         private int _deadIterationsNumber;
+        /// <summary>
+        /// Flag is some node was recolored on current iteration
+        /// </summary>
         private bool _isSomeoneRecoloredOnThisIteration;
+        /// <summary>
+        /// For generate pseudo-random numbers
+        /// </summary>
+        private readonly Random _rand = new Random();
 
-
+        /// <summary>
+        /// List of graph nodes
+        /// </summary>
+        public readonly List<Node> Nodes = new List<Node>();
+        /// <summary>
+        /// List of connections between nodes. For visual part only
+        /// </summary>
+        public readonly List<Connection> Connections = new List<Connection>();
+        /// <summary>
+        /// Chromatic number - number of colors graph can be colored in
+        /// </summary>
+        public int ChromaticNumber;
+        
+        /// <summary>
+        /// Number of current iteration
+        /// </summary>
+        public int IterationNumber = -1;
+        /// <summary>
+        /// Number of ants
+        /// </summary>
+        public int AntsNumber;
+        /// <summary>
+        /// List of ants. Integer field - ant location (node index)
+        /// </summary>
+        public readonly List<int> Ants = new List<int>();
+        
         /// <summary>
         /// Reads graph from file
         /// </summary>
@@ -75,15 +106,20 @@ namespace T8_AI_Lab1_Ants
             Console.WriteLine(@"Graph is colored");
         }
 
+        /// <summary>
+        /// Performs one iteration
+        /// </summary>
         public void OneIteration()
         {
             Console.WriteLine($"Iteration #{IterationNumber} -------------------");
 
             for (var i = 0; i < Ants.Count; i++)
             {
+                // For isolated nodes
                 if (Nodes[Ants[i]].ConnectedWith.Count == 0)
                     continue;
 
+                // Read README.md
                 var maxi = Nodes[Ants[i]].ConnectedWith[0];
                 // ReSharper disable once IdentifierTypo
                 var confsoverall = 0;
@@ -99,6 +135,7 @@ namespace T8_AI_Lab1_Ants
                 // ReSharper disable once IdentifierTypo
                 var maxconf = Nodes[maxi].ConflictsNumber;
                 var p = confsoverall != 0 ? M * maxconf * 100 / confsoverall : 0;
+
                 Console.Write($"Ant #{i,2} moves from {Ants[i],3} to ");
                 if (_rand.Next(101) < p)
                     Ants[i] = maxi;
@@ -109,6 +146,7 @@ namespace T8_AI_Lab1_Ants
             }
             Console.WriteLine($"Conflict nodes number is {GetConflictNodesNumber(),3}");
 
+            // Algorithm optimization
             if (!_isSomeoneRecoloredOnThisIteration)
                 _deadIterationsNumber++;
             else
@@ -117,6 +155,9 @@ namespace T8_AI_Lab1_Ants
             IterationNumber++;
         }
 
+        /// <summary>
+        /// Prepares ants for work
+        /// </summary>
         public void PrepareToColor()
         {
             ConsoleManager.Show();
@@ -131,16 +172,27 @@ namespace T8_AI_Lab1_Ants
             IterationNumber = 0;
         }
 
+        /// <summary>
+        /// Checks is graph colored
+        /// </summary>
+        /// <returns>Is graph colored</returns>
         public bool GetIsColored()
         {
             return Nodes.All(node => node.ConflictsNumber == 0);
         }
 
+        /// <summary>
+        /// Calculates number of nodes that have conflicts
+        /// </summary>
+        /// <returns>Number of nodes with conflicts</returns>
         public int GetConflictNodesNumber()
         {
             return Nodes.Count(node => node.ConflictsNumber != 0);
         }
 
+        /// <summary>
+        /// Recalculates conflicts number for every node
+        /// </summary>
         public void UpdateConflicts()
         {
             foreach (var node in Nodes)
@@ -153,24 +205,34 @@ namespace T8_AI_Lab1_Ants
             }
         }
 
+        /// <summary>
+        /// Calculates number of conflicts for node with specified index
+        /// </summary>
+        /// <param name="idx">Node index</param>
+        /// <returns>Number of conflicts</returns>
         public int GetConflictsForNode(int idx)
         {
             var node = Nodes[idx];
-            //node.ConflictsNumber = 0;
             // ReSharper disable once UnusedVariable
             return node.ConnectedWith.Count(neighborIdx => Nodes[neighborIdx].ColorNumber == node.ColorNumber);
         }
 
+        /// <summary>
+        /// Ant recolors its node
+        /// </summary>
+        /// <param name="idx">Index of node</param>
         public void RecolorNode(int idx)
         {
+            // Remember color
             var currColor = Nodes[idx].ColorNumber;
 
+            // Algorithm optimization
             if (10 <= _deadIterationsNumber)
                 Nodes[idx].ColorNumber = _rand.Next(ChromaticNumber);
             else
             {
+                // Find all the best solutions
                 var min = Nodes[idx].ConflictsNumber;
-                //var minColor = Nodes[idx].ColorNumber;
                 var minColors = new List<int>();
                 for (var color = 0; color < ChromaticNumber; color++)
                 {
@@ -179,7 +241,6 @@ namespace T8_AI_Lab1_Ants
                     if (conflicts < min)
                     {
                         min = conflicts;
-                        //minColor = color;
 
                         minColors.Clear();
                         minColors.Add(color);
@@ -188,10 +249,10 @@ namespace T8_AI_Lab1_Ants
                         minColors.Add(color);
                 }
 
-                //Nodes[idx].ColorNumber = minColor;
                 Nodes[idx].ColorNumber = minColors[_rand.Next(minColors.Count)];
             }
 
+            // Additional stuff
             if (currColor != Nodes[idx].ColorNumber)
             {
                 Console.WriteLine($"and recolors it from {currColor,3} to {Nodes[idx].ColorNumber,3}");
@@ -206,7 +267,9 @@ namespace T8_AI_Lab1_Ants
             }
         }
 
-
+        /// <summary>
+        /// Clears graph
+        /// </summary>
         public void Clear()
         {
             Nodes.Clear();

@@ -31,15 +31,39 @@ namespace T8_AI_Lab1_Ants
     /// </summary>
     public partial class MainWindow
     {
+        /// <summary>
+        /// Brush for borders
+        /// </summary>
         private readonly SolidColorBrush _brushBlack = Brushes.Black;
+        /// <summary>
+        /// Brush for text
+        /// </summary>
         private readonly SolidColorBrush _brushWhite = Brushes.White;
+        /// <summary>
+        /// Brush for selected node fill
+        /// </summary>
         private readonly SolidColorBrush _brushGrey = Brushes.LightGray;
 
+        /// <summary>
+        /// Graph
+        /// </summary>
         private readonly Graph _graph = new Graph();
+        /// <summary>
+        /// For generate random numbers
+        /// </summary>
         private readonly Random _rand = new Random();
 
+        /// <summary>
+        /// Index of a node where pointer is (-1 for not on a node)
+        /// </summary>
         private int _onNode = -1;
-        private bool _wasPrepared;
+        /// <summary>
+        /// Flag for check is graph prepered for algorithm
+        /// </summary>
+        private bool _isGraphPrepared;
+        /// <summary>
+        /// Flag for show visual part (draw graph or work only in console)
+        /// </summary>
         private bool _drawGraph;
 
         public MainWindow()
@@ -47,6 +71,11 @@ namespace T8_AI_Lab1_Ants
             InitializeComponent();
         }
 
+        /// <summary>
+        /// For Collection file selection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonOpenFile_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog
@@ -67,6 +96,7 @@ namespace T8_AI_Lab1_Ants
                 var filename = dlg.FileName;
                 _graph.ParseFile(filename);
 
+                // If graph is too big ask does user sure about to draw it
                 if (50 < _graph.Nodes.Count)
                 {
                     var res = MessageBox.Show("Graph has more nodes than 50." +
@@ -86,6 +116,9 @@ namespace T8_AI_Lab1_Ants
             }
         }
 
+        /// <summary>
+        /// Draws graph on canvas
+        /// </summary>
         private void DrawGraph()
         {
             var n = Convert.ToInt32(Math.Ceiling(Math.Sqrt(_graph.Nodes.Count)));
@@ -117,12 +150,20 @@ namespace T8_AI_Lab1_Ants
             RecolorNodes();
         }
 
+        /// <summary>
+        /// Updates color of nodes
+        /// </summary>
         private void RecolorNodes()
         {
             for (var i = 0; i < _graph.Nodes.Count; i++)
                 FillNode(i, new SolidColorBrush(GetColor(_graph.Nodes[i].ColorNumber)));
         }
 
+        /// <summary>
+        /// Adds node to canvas
+        /// </summary>
+        /// <param name="pos">Location on canvas</param>
+        /// <param name="idx">Index of node (for text on it)</param>
         private void AddNotVisual(Point pos, int idx)
         {
             var grid = new Grid
@@ -158,6 +199,11 @@ namespace T8_AI_Lab1_Ants
             _graph.Nodes[idx].CanvasIdx = CanvasMain.Children.Count - 1;
         }
 
+        /// <summary>
+        /// Connects two nodes on canvas
+        /// </summary>
+        /// <param name="idx1">First node index</param>
+        /// <param name="idx2">Second node index</param>
         private void ConnectNotVisual(int idx1, int idx2)
         {
             var conn = new Line
@@ -189,6 +235,11 @@ namespace T8_AI_Lab1_Ants
 
         }
 
+        /// <summary>
+        /// Fills node on canvas
+        /// </summary>
+        /// <param name="nodeIdx">Index of node</param>
+        /// <param name="color">Color to fill node in</param>
         private void FillNode(int nodeIdx, Brush color)
         {
             var grid = (Grid)CanvasMain.Children[_graph.Nodes[nodeIdx].CanvasIdx];
@@ -212,7 +263,7 @@ namespace T8_AI_Lab1_Ants
             _graph.Color();
             if (_drawGraph)
                 RecolorNodes();
-            _wasPrepared = false;
+            _isGraphPrepared = false;
             MessageBox.Show($"Done in {_graph.IterationNumber} iterations");
         }
 
@@ -256,6 +307,10 @@ namespace T8_AI_Lab1_Ants
             _onNode = -1;
         }
 
+        /// <summary>
+        /// Changes node location
+        /// </summary>
+        /// <param name="mousePos">New location</param>
         private void MoveNode(Point mousePos)
         {
             // Moving node
@@ -290,12 +345,12 @@ namespace T8_AI_Lab1_Ants
             _graph.PrepareToColor();
             if (_drawGraph)
                 UpdateNodesInfo();
-            _wasPrepared = true;
+            _isGraphPrepared = true;
         }
 
         private void ButtonOneIteration_Click(object sender, RoutedEventArgs e)
         {
-            if (!_wasPrepared)
+            if (!_isGraphPrepared)
                 ButtonPrepare.PerformClick();
 
             _graph.OneIteration();
@@ -306,11 +361,14 @@ namespace T8_AI_Lab1_Ants
             }
             if (_graph.GetIsColored())
             {
-                _wasPrepared = false;
+                _isGraphPrepared = false;
                 MessageBox.Show($"Done in {_graph.IterationNumber} iterations");
             }
         }
 
+        /// <summary>
+        /// Updates text on nodes (location of ants, conflicts number)
+        /// </summary>
         private void UpdateNodesInfo()
         {
             for (var i = 0; i < _graph.Nodes.Count; i++)

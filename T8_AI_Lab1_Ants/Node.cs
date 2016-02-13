@@ -6,8 +6,6 @@ namespace T8_AI_Lab1_Ants
 {
     public class Node
     {
-        //public int Id;
-
         /// <summary>
         /// Coordinates on Canvas
         /// </summary>
@@ -35,8 +33,13 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         public readonly List<int> ConnectedBy = new List<int>();
 
-
+        /// <summary>
+        /// Number of color node is colored in
+        /// </summary>
         public int ColorNumber;
+        /// <summary>
+        /// Number of conflicts for node
+        /// </summary>
         public int ConflictsNumber;
       
         /// <summary>

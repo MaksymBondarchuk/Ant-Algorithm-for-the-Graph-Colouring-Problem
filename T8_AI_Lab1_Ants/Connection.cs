@@ -36,7 +36,6 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         public int CanvasIdx;
 
-        
         /// <summary>
         /// Checks if p is point of line
         /// </summary>
