@@ -113,6 +113,14 @@ namespace T8_AI_Lab1_Ants
 
                 _graph.AntsNumber = _graph.Nodes.Count / 3;
                 TextBoxAntsNumber.Text = _graph.AntsNumber.ToString();
+
+                LabelAntsNumber.IsEnabled = true;
+                TextBoxAntsNumber.IsEnabled = true;
+                ButtonColor.IsEnabled = true;
+                ButtonPrepare.IsEnabled = true;
+                ButtonOneIteration.IsEnabled = true;
+                ButtonClear.IsEnabled = true;
+                ButtonResetGraph.IsEnabled = true;
             }
         }
 
@@ -390,6 +398,14 @@ namespace T8_AI_Lab1_Ants
         {
             CanvasMain.Children.Clear();
             _graph.Clear();
+
+            LabelAntsNumber.IsEnabled = false;
+            TextBoxAntsNumber.IsEnabled = false;
+            ButtonColor.IsEnabled = false;
+            ButtonPrepare.IsEnabled = false;
+            ButtonOneIteration.IsEnabled = false;
+            ButtonClear.IsEnabled = false;
+            ButtonResetGraph.IsEnabled = false;
         }
 
         private void ButtonResetGraph_Click(object sender, RoutedEventArgs e)
