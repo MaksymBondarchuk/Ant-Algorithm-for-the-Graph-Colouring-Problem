@@ -134,9 +134,8 @@ namespace T8_AI_Lab1_Ants
                 n = 4;
             if (_graph.Nodes.Count == 20)
                 n = 10;
-            //n = Convert.ToInt32(n * 1.5);
 
-            var width = (WindowMain.ActualWidth - 400) / n;
+            var width = (WindowMain.ActualWidth - 200) / n;
             var height = WindowMain.ActualHeight / n;
 
             for (var i = 0; i < _graph.Nodes.Count; i++)

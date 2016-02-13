@@ -27,6 +27,9 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         private readonly Random _rand = new Random();
 
+        private string _fileName;
+        private string _fileNameResults;
+
         /// <summary>
         /// List of graph nodes
         /// </summary>
@@ -39,7 +42,7 @@ namespace T8_AI_Lab1_Ants
         /// Chromatic number - number of colors graph can be colored in
         /// </summary>
         public int ChromaticNumber;
-        
+
         /// <summary>
         /// Number of current iteration
         /// </summary>
@@ -52,13 +55,16 @@ namespace T8_AI_Lab1_Ants
         /// List of ants. Integer field - ant location (node index)
         /// </summary>
         public readonly List<int> Ants = new List<int>();
-        
+
         /// <summary>
         /// Reads graph from file
         /// </summary>
         /// <param name="fileName">Mame of file</param>
         public void ParseFile(string fileName)
         {
+            _fileName = fileName;
+            _fileNameResults = _fileName.Substring(0, _fileName.Length - 4) + ".log";
+
             var m1 = Regex.Match(fileName, @".([\d]+)\.col$");
             ChromaticNumber = Convert.ToInt32(m1.Groups[1].Value);
 
@@ -104,6 +110,8 @@ namespace T8_AI_Lab1_Ants
             do OneIteration();
             while (!GetIsColored());
             Console.WriteLine(@"Graph is colored");
+            Console.WriteLine($"Results in file {_fileNameResults}");
+            WriteResultToFile();
         }
 
         /// <summary>
@@ -278,6 +286,25 @@ namespace T8_AI_Lab1_Ants
             IterationNumber = 0;
             AntsNumber = 0;
             Ants.Clear();
+        }
+
+        /// <summary>
+        /// Writes colored graph to file
+        /// </summary>
+        public void WriteResultToFile()
+        {
+            using (var file = new StreamWriter(_fileNameResults))
+            {
+                file.WriteLine($"c Colored graph for file {_fileName}");
+                file.WriteLine("c Results in format \"n {node number} {node color}\"");
+                file.WriteLine(IterationNumber == 1
+                    ? "c Graph is colored in 1 iteration"
+                    : $"c Graph is colored in {IterationNumber} iterations");
+                for (var i = 0; i < Nodes.Count; i++)
+                {
+                    file.WriteLine($"n {i} {Nodes[i].ColorNumber}");
+                }
+            }
         }
     }
 }
