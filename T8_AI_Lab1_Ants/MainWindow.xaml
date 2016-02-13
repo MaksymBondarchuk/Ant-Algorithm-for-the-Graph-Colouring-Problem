@@ -7,14 +7,13 @@
         Title="An Ant Algorithm for the Graph Colouring Problem Solver" Height="350" Width="525" MinWidth="1280" MinHeight="720" WindowStartupLocation="CenterScreen" WindowState="Maximized" MouseMove="WindowMain_MouseMove" MouseDown="WindowMain_MouseDown" MouseUp="WindowMain_MouseUp">
     <Grid>
         <Button x:Name="ButtonOpenFile" Content="Open file" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Click="buttonOpenFile_Click"/>
-        <Canvas x:Name="CanvasMain" HorizontalAlignment="Left" Height="679" VerticalAlignment="Top" Width="1182"/>
+        <Canvas x:Name="CanvasMain" HorizontalAlignment="Left" Height="679" VerticalAlignment="Top" Width="1167"/>
         <Button x:Name="ButtonColor" Content="Color" HorizontalAlignment="Right" Margin="0,110,10,0" VerticalAlignment="Top" Width="75" Click="ButtonColor_Click"/>
         <TextBox x:Name="TextBoxAntsNumber" HorizontalAlignment="Right" Height="23" Margin="0,82,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" PreviewTextInput="TextBoxAntsNumber_PreviewTextInput"/>
         <Button x:Name="ButtonPrepare" Content="Prepare" HorizontalAlignment="Right" Margin="0,160,10,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.4,0" Click="ButtonPrepare_Click"/>
         <Button x:Name="ButtonOneIteration" Content="One iteration" HorizontalAlignment="Right" Margin="0,185,10,0" VerticalAlignment="Top" Width="75" Click="ButtonOneIteration_Click"/>
         <Button x:Name="ButtonClear" Content="Clear" HorizontalAlignment="Right" Margin="0,225,10,0" VerticalAlignment="Top" Width="75" Click="ButtonClear_Click"/>
         <Button x:Name="ButtonResetGraph" Content="Reset graph" HorizontalAlignment="Right" Margin="0,250,10,0" VerticalAlignment="Top" Width="75" Click="ButtonResetGraph_Click"/>
-        <CheckBox x:Name="CheckBoxDebug" Content="Debug mode" HorizontalAlignment="Right" Margin="0,310,10,0" VerticalAlignment="Top" Checked="CheckBoxDebug_Checked" Unchecked="CheckBoxDebug_Unchecked"/>
 
     </Grid>
 </Window>

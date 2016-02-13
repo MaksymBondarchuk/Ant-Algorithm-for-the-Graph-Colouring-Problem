@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using NBLib;
 
 namespace T8_AI_Lab1_Ants
 {
@@ -13,10 +14,13 @@ namespace T8_AI_Lab1_Ants
         public int ChromaticNumber;
         private readonly Random _rand = new Random();
         public const int M = 1;
-        public int Iterations;
+        public int IterationNumber = -1;
         public int AntsNumber;
         public readonly List<int> Ants = new List<int>();
-        public bool DebugMode { get; set; }
+
+        private int _deadIterationsNumber;
+        private bool _isSomeoneRecoloredOnThisIteration;
+
 
         /// <summary>
         /// Reads graph from file
@@ -67,11 +71,14 @@ namespace T8_AI_Lab1_Ants
             PrepareToColor();
 
             do OneIteration();
-            while (!IsColored());
+            while (!GetIsColored());
+            Console.WriteLine(@"Graph is colored");
         }
 
         public void OneIteration()
         {
+            Console.WriteLine($"Iteration #{IterationNumber} -------------------");
+
             for (var i = 0; i < Ants.Count; i++)
             {
                 if (Nodes[Ants[i]].ConnectedWith.Count == 0)
@@ -80,11 +87,6 @@ namespace T8_AI_Lab1_Ants
                 var maxi = Nodes[Ants[i]].ConnectedWith[0];
                 // ReSharper disable once IdentifierTypo
                 var confsoverall = 0;
-
-                if (DebugMode)
-                {
-                    Math.Cos(5);
-                }
 
                 foreach (var neighbor in Nodes[Ants[i]].ConnectedWith)
                 {
@@ -97,28 +99,46 @@ namespace T8_AI_Lab1_Ants
                 // ReSharper disable once IdentifierTypo
                 var maxconf = Nodes[maxi].ConflictsNumber;
                 var p = confsoverall != 0 ? M * maxconf * 100 / confsoverall : 0;
+                Console.Write($"Ant #{i,2} moves from {Ants[i],3} to ");
                 if (_rand.Next(101) < p)
                     Ants[i] = maxi;
                 else
                     Ants[i] = Nodes[Ants[i]].ConnectedWith[_rand.Next(Nodes[Ants[i]].ConnectedWith.Count)];
+                Console.Write($"{Ants[i],3} ");
                 RecolorNode(Ants[i]);
             }
-            Iterations++;
+            Console.WriteLine($"Conflict nodes number is {GetConflictNodesNumber(),3}");
+
+            if (!_isSomeoneRecoloredOnThisIteration)
+                _deadIterationsNumber++;
+            else
+                _deadIterationsNumber = 0;
+
+            IterationNumber++;
         }
 
         public void PrepareToColor()
         {
+            ConsoleManager.Show();
+            Console.Clear();
+            Console.WriteLine(@"Preparing to color");
+
             UpdateConflicts();
 
             Ants.Clear();
             for (var i = 0; i < AntsNumber; i++)
                 Ants.Add(_rand.Next(Nodes.Count));
-            Iterations = 0;
+            IterationNumber = 0;
         }
 
-        public bool IsColored()
+        public bool GetIsColored()
         {
             return Nodes.All(node => node.ConflictsNumber == 0);
+        }
+
+        public int GetConflictNodesNumber()
+        {
+            return Nodes.Count(node => node.ConflictsNumber != 0);
         }
 
         public void UpdateConflicts()
@@ -143,39 +163,47 @@ namespace T8_AI_Lab1_Ants
 
         public void RecolorNode(int idx)
         {
-            //var currColor = Nodes[idx].ColorNumber;
-            var min = Nodes[idx].ConflictsNumber;
-            var minColor = Nodes[idx].ColorNumber;
-            var minColors = new List<int>();
-            for (var color = 0; color < ChromaticNumber; color++)
-            {
-                Nodes[idx].ColorNumber = color;
-                var conflicts = GetConflictsForNode(idx);
-                if (conflicts < min)
-                {
-                    min = conflicts;
-                    minColor = color;
+            var currColor = Nodes[idx].ColorNumber;
 
-                    minColors.Clear();
-                    minColors.Add(color);
+            if (10 <= _deadIterationsNumber)
+                Nodes[idx].ColorNumber = _rand.Next(ChromaticNumber);
+            else
+            {
+                var min = Nodes[idx].ConflictsNumber;
+                //var minColor = Nodes[idx].ColorNumber;
+                var minColors = new List<int>();
+                for (var color = 0; color < ChromaticNumber; color++)
+                {
+                    Nodes[idx].ColorNumber = color;
+                    var conflicts = GetConflictsForNode(idx);
+                    if (conflicts < min)
+                    {
+                        min = conflicts;
+                        //minColor = color;
+
+                        minColors.Clear();
+                        minColors.Add(color);
+                    }
+                    else if (conflicts == min)
+                        minColors.Add(color);
                 }
-                else if (conflicts == min)
-                    minColors.Add(color);
+
+                //Nodes[idx].ColorNumber = minColor;
+                Nodes[idx].ColorNumber = minColors[_rand.Next(minColors.Count)];
             }
 
-            // For remove possible deadlocks
-            //var minColors = new List<int>();
-            //for (var color = 0; color < ChromaticNumber; color++)
-            //    if (GetConflictsForNode(idx) )
+            if (currColor != Nodes[idx].ColorNumber)
+            {
+                Console.WriteLine($"and recolors it from {currColor,3} to {Nodes[idx].ColorNumber,3}");
+                _isSomeoneRecoloredOnThisIteration = true;
 
-            //Nodes[idx].ColorNumber = minColor;
-            Nodes[idx].ColorNumber = _rand.Next(101) < 70 ? minColors[_rand.Next(minColors.Count)] 
-                : _rand.Next(ChromaticNumber);
-            UpdateConflicts();
-            //Nodes[idx].ConflictsNumber = min;
-
-            //foreach (var neighbor in Nodes[idx].ConnectedWith)
-            //    Nodes[neighbor].ConflictsNumber = GetConflictsForNode(neighbor);
+                UpdateConflicts();
+            }
+            else
+            {
+                Console.WriteLine(@"and doesn't recolor it");
+                _isSomeoneRecoloredOnThisIteration = false;
+            }
         }
 
 
@@ -184,7 +212,7 @@ namespace T8_AI_Lab1_Ants
             Nodes.Clear();
             Connections.Clear();
             ChromaticNumber = 0;
-            Iterations = 0;
+            IterationNumber = 0;
             AntsNumber = 0;
             Ants.Clear();
         }

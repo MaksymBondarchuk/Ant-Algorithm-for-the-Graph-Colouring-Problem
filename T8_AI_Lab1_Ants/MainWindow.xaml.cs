@@ -91,9 +91,11 @@ namespace T8_AI_Lab1_Ants
             var n = Convert.ToInt32(Math.Ceiling(Math.Sqrt(_graph.Nodes.Count)));
             if (_graph.Nodes.Count == 8)
                 n = 4;
+            if (_graph.Nodes.Count == 20)
+                n = 10;
             //n = Convert.ToInt32(n * 1.5);
 
-            var width = (WindowMain.ActualWidth - 75) / n;
+            var width = (WindowMain.ActualWidth - 400) / n;
             var height = WindowMain.ActualHeight / n;
 
             for (var i = 0; i < _graph.Nodes.Count; i++)
@@ -210,9 +212,8 @@ namespace T8_AI_Lab1_Ants
             _graph.Color();
             if (_drawGraph)
                 RecolorNodes();
-            //MessageBox.Show("Done");
             _wasPrepared = false;
-            MessageBox.Show($"Done in {_graph.Iterations} iterations");
+            MessageBox.Show($"Done in {_graph.IterationNumber} iterations");
         }
 
         private void TextBoxAntsNumber_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -303,10 +304,10 @@ namespace T8_AI_Lab1_Ants
                 UpdateNodesInfo();
                 RecolorNodes();
             }
-            if (_graph.IsColored())
+            if (_graph.GetIsColored())
             {
                 _wasPrepared = false;
-                MessageBox.Show($"Done in {_graph.Iterations} iterations");
+                MessageBox.Show($"Done in {_graph.IterationNumber} iterations");
             }
         }
 
@@ -339,16 +340,6 @@ namespace T8_AI_Lab1_Ants
                 t.ColorNumber = _rand.Next(_graph.ChromaticNumber);
             if (_drawGraph)
                 RecolorNodes();
-        }
-
-        private void CheckBoxDebug_Checked(object sender, RoutedEventArgs e)
-        {
-            _graph.DebugMode = true;
-        }
-
-        private void CheckBoxDebug_Unchecked(object sender, RoutedEventArgs e)
-        {
-            _graph.DebugMode = false;
         }
     }
 }
