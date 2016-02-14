@@ -302,7 +302,7 @@ namespace T8_AI_Lab1_Ants
                     : $"c Graph is colored in {IterationNumber} iterations");
                 for (var i = 0; i < Nodes.Count; i++)
                 {
-                    file.WriteLine($"n {i} {Nodes[i].ColorNumber}");
+                    file.WriteLine($"n {i + 1} {Nodes[i].ColorNumber}");
                 }
             }
         }
