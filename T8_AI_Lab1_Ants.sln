@@ -7,6 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T8_AI_Lab1_Ants", "T8_AI_La
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{67B9B9D6-399E-4CDE-9AC4-D55564CF4756}"
 	ProjectSection(SolutionItems) = preProject
+		images\Figure 1.png = images\Figure 1.png
 		Graphs\SimpleTest.3.col = Graphs\SimpleTest.3.col
 		Graphs\SmartTestLong.2.col = Graphs\SmartTestLong.2.col
 		Graphs\SmartTestShort.2.col = Graphs\SmartTestShort.2.col
