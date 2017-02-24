@@ -58,7 +58,7 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         private int _onNode = -1;
         /// <summary>
-        /// Flag for check is graph prepered for algorithm
+        /// Flag for check is graph prepared for algorithm
         /// </summary>
         private bool _isGraphPrepared;
         /// <summary>
@@ -175,15 +175,15 @@ namespace T8_AI_Lab1_Ants
         {
             var grid = new Grid
             {
-                Height = Node.NodeSize,
-                Width = Node.NodeSize,
-                Margin = new Thickness(pos.X - Node.NodeSize * .5, pos.Y - Node.NodeSize * .5, 0, 0)
+                Height = Vertex.NodeSize,
+                Width = Vertex.NodeSize,
+                Margin = new Thickness(pos.X - Vertex.NodeSize * .5, pos.Y - Vertex.NodeSize * .5, 0, 0)
             };
 
             var circle = new Ellipse
             {
-                Height = Node.NodeSize,
-                Width = Node.NodeSize,
+                Height = Vertex.NodeSize,
+                Width = Vertex.NodeSize,
                 StrokeThickness = 2,
                 Stroke = _brushBlack,
                 Fill = _brushWhite
@@ -195,7 +195,7 @@ namespace T8_AI_Lab1_Ants
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextAlignment = TextAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                FontSize = Node.NodeFontSize,
+                FontSize = Vertex.NodeFontSize,
                 Text = (idx + 1).ToString()
             };
             grid.Children.Add(textBlock);
@@ -226,7 +226,7 @@ namespace T8_AI_Lab1_Ants
             CanvasMain.Children.Add(conn);
             Panel.SetZIndex(CanvasMain.Children[CanvasMain.Children.Count - 1], 1);
 
-            _graph.Connections.Add(new Connection
+            _graph.Connections.Add(new Edge
             {
                 P1 = _graph.Nodes[idx1].Location,
                 Node1 = idx1,

@@ -33,11 +33,11 @@ namespace T8_AI_Lab1_Ants
         /// <summary>
         /// List of graph nodes
         /// </summary>
-        public readonly List<Node> Nodes = new List<Node>();
+        public readonly List<Vertex> Nodes = new List<Vertex>();
         /// <summary>
         /// List of connections between nodes. For visual part only
         /// </summary>
-        public readonly List<Connection> Connections = new List<Connection>();
+        public readonly List<Edge> Connections = new List<Edge>();
         /// <summary>
         /// Chromatic number - number of colors graph can be colored in
         /// </summary>
@@ -80,7 +80,7 @@ namespace T8_AI_Lab1_Ants
                     {
                         var nodesNumber = Convert.ToInt32(Regex.Match(line, @"\d+").Value);
                         for (var i = 0; i < nodesNumber; i++)
-                            Nodes.Add(new Node());
+                            Nodes.Add(new Vertex());
                     }
 
                     if (line[0] == 'e')
@@ -216,7 +216,7 @@ namespace T8_AI_Lab1_Ants
         /// <summary>
         /// Calculates number of conflicts for node with specified index
         /// </summary>
-        /// <param name="idx">Node index</param>
+        /// <param name="idx">Vertex index</param>
         /// <returns>Number of conflicts</returns>
         public int GetConflictsForNode(int idx)
         {

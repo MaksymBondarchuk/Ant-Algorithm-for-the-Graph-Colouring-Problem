@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Connection.cs" company="NTUU 'KPI'">
+// <copyright file="Edge.cs" company="NTUU 'KPI'">
 //     Copyright (c) Max Bondarchuk. All rights reserved.
 // </copyright>
 // <author>Max Bondarchuk</author>
@@ -11,9 +11,9 @@ using System.Windows;
 namespace T8_AI_Lab1_Ants
 {
     /// <summary>
-    /// Connection on graph
+    /// Edge on graph
     /// </summary>
-    public class Connection
+    public class Edge
     {
         /// <summary>
         /// First point coordinates

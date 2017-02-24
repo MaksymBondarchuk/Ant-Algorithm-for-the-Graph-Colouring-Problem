@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace T8_AI_Lab1_Ants
 {
-    public class Node
+    public class Vertex
     {
         /// <summary>
         /// Coordinates on Canvas
@@ -19,7 +19,7 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         public const int NodeFontSize = 15;
         /// <summary>
-        /// Node index in Canvas.Children
+        /// Vertex index in Canvas.Children
         /// </summary>
         public int CanvasIdx;
 
