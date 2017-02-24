@@ -13,11 +13,11 @@ namespace T8_AI_Lab1_Ants
         /// <summary>
         /// Size in pixels
         /// </summary>
-        public const int NodeSize = 50;
+        public const int VertexSize = 50;
         /// <summary>
         /// Font size in pixels
         /// </summary>
-        public const int NodeFontSize = 15;
+        public const int VertexFontSize = 15;
         /// <summary>
         /// Vertex index in Canvas.Children
         /// </summary>
@@ -49,7 +49,7 @@ namespace T8_AI_Lab1_Ants
         /// <returns></returns>
         public bool IsMyPoint(Point p)
         {
-            return Math.Pow(p.X - Location.X, 2) + Math.Pow(p.Y - Location.Y, 2) <= NodeSize * NodeSize * .25;
+            return Math.Pow(p.X - Location.X, 2) + Math.Pow(p.Y - Location.Y, 2) <= VertexSize * VertexSize * .25;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace T8_AI_Lab1_Ants
         /// <returns></returns>
         public bool IsNearPoint(Point p)
         {
-            return Math.Pow(p.X - Location.X, 2) + Math.Pow(p.Y - Location.Y, 2) <= NodeSize * NodeSize;
+            return Math.Pow(p.X - Location.X, 2) + Math.Pow(p.Y - Location.Y, 2) <= VertexSize * VertexSize;
         }
     }
 }

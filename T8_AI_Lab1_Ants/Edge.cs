@@ -1,11 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="Edge.cs" company="NTUU 'KPI'">
-//     Copyright (c) Max Bondarchuk. All rights reserved.
-// </copyright>
-// <author>Max Bondarchuk</author>
-//-----------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Windows;
 
 namespace T8_AI_Lab1_Ants
@@ -19,18 +12,22 @@ namespace T8_AI_Lab1_Ants
         /// First point coordinates
         /// </summary>
         public Point P1;
+
         /// <summary>
         /// Second point coordinates
         /// </summary>
         public Point P2;
+
         /// <summary>
-        /// First connected node
+        /// First connected vertex
         /// </summary>
-        public int Node1;
+        public int Vertex1;
+
         /// <summary>
-        /// Second connected node
+        /// Second connected vertex
         /// </summary>
-        public int Node2;
+        public int Vertex2;
+
         /// <summary>
         /// Index in Canvas.Children
         /// </summary>

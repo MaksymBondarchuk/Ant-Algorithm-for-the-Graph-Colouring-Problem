@@ -33,11 +33,11 @@ namespace T8_AI_Lab1_Ants
         /// <summary>
         /// List of graph nodes
         /// </summary>
-        public readonly List<Vertex> Nodes = new List<Vertex>();
+        public readonly List<Vertex> Vertices = new List<Vertex>();
         /// <summary>
         /// List of connections between nodes. For visual part only
         /// </summary>
-        public readonly List<Edge> Connections = new List<Edge>();
+        public readonly List<Edge> Edges = new List<Edge>();
         /// <summary>
         /// Chromatic number - number of colors graph can be colored in
         /// </summary>
@@ -80,7 +80,7 @@ namespace T8_AI_Lab1_Ants
                     {
                         var nodesNumber = Convert.ToInt32(Regex.Match(line, @"\d+").Value);
                         for (var i = 0; i < nodesNumber; i++)
-                            Nodes.Add(new Vertex());
+                            Vertices.Add(new Vertex());
                     }
 
                     if (line[0] == 'e')
@@ -93,8 +93,8 @@ namespace T8_AI_Lab1_Ants
                         var node1 = Convert.ToInt32(m[0].Value) - 1;
                         var node2 = Convert.ToInt32(m[1].Value) - 1;
 
-                        Nodes[node1].ConnectedWith.Add(node2);
-                        Nodes[node2].ConnectedWith.Add(node1);
+                        Vertices[node1].ConnectedWith.Add(node2);
+                        Vertices[node2].ConnectedWith.Add(node1);
                     }
                 }
             }
@@ -124,31 +124,31 @@ namespace T8_AI_Lab1_Ants
             for (var i = 0; i < Ants.Count; i++)
             {
                 // For isolated nodes
-                if (Nodes[Ants[i]].ConnectedWith.Count == 0)
+                if (Vertices[Ants[i]].ConnectedWith.Count == 0)
                     continue;
 
                 // Read README.md
-                var maxi = Nodes[Ants[i]].ConnectedWith[0];
+                var maxi = Vertices[Ants[i]].ConnectedWith[0];
                 // ReSharper disable once IdentifierTypo
                 var confsoverall = 0;
 
-                foreach (var neighbor in Nodes[Ants[i]].ConnectedWith)
+                foreach (var neighbor in Vertices[Ants[i]].ConnectedWith)
                 {
-                    confsoverall += Nodes[neighbor].ConflictsNumber;
+                    confsoverall += Vertices[neighbor].ConflictsNumber;
 
-                    if (Nodes[maxi].ConflictsNumber < Nodes[neighbor].ConflictsNumber)
+                    if (Vertices[maxi].ConflictsNumber < Vertices[neighbor].ConflictsNumber)
                         maxi = neighbor;
                 }
 
                 // ReSharper disable once IdentifierTypo
-                var maxconf = Nodes[maxi].ConflictsNumber;
+                var maxconf = Vertices[maxi].ConflictsNumber;
                 var p = confsoverall != 0 ? M * maxconf * 100 / confsoverall : 0;
 
                 Console.Write($"Ant #{i,2} moves from {Ants[i],3} to ");
                 if (_rand.Next(101) < p)
                     Ants[i] = maxi;
                 else
-                    Ants[i] = Nodes[Ants[i]].ConnectedWith[_rand.Next(Nodes[Ants[i]].ConnectedWith.Count)];
+                    Ants[i] = Vertices[Ants[i]].ConnectedWith[_rand.Next(Vertices[Ants[i]].ConnectedWith.Count)];
                 Console.Write($"{Ants[i],3} ");
                 RecolorNode(Ants[i]);
             }
@@ -176,7 +176,7 @@ namespace T8_AI_Lab1_Ants
 
             Ants.Clear();
             for (var i = 0; i < AntsNumber; i++)
-                Ants.Add(_rand.Next(Nodes.Count));
+                Ants.Add(_rand.Next(Vertices.Count));
             IterationNumber = 0;
         }
 
@@ -186,7 +186,7 @@ namespace T8_AI_Lab1_Ants
         /// <returns>Is graph colored</returns>
         public bool GetIsColored()
         {
-            return Nodes.All(node => node.ConflictsNumber == 0);
+            return Vertices.All(node => node.ConflictsNumber == 0);
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace T8_AI_Lab1_Ants
         /// <returns>Number of nodes with conflicts</returns>
         public int GetConflictNodesNumber()
         {
-            return Nodes.Count(node => node.ConflictsNumber != 0);
+            return Vertices.Count(node => node.ConflictsNumber != 0);
         }
 
         /// <summary>
@@ -203,12 +203,12 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         public void UpdateConflicts()
         {
-            foreach (var node in Nodes)
+            foreach (var node in Vertices)
             {
                 node.ConflictsNumber = 0;
                 // ReSharper disable once UnusedVariable
                 foreach (var neighborIdx in
-                        node.ConnectedWith.Where(neighborIdx => Nodes[neighborIdx].ColorNumber == node.ColorNumber))
+                        node.ConnectedWith.Where(neighborIdx => Vertices[neighborIdx].ColorNumber == node.ColorNumber))
                     node.ConflictsNumber++;
             }
         }
@@ -220,9 +220,9 @@ namespace T8_AI_Lab1_Ants
         /// <returns>Number of conflicts</returns>
         public int GetConflictsForNode(int idx)
         {
-            var node = Nodes[idx];
+            var node = Vertices[idx];
             // ReSharper disable once UnusedVariable
-            return node.ConnectedWith.Count(neighborIdx => Nodes[neighborIdx].ColorNumber == node.ColorNumber);
+            return node.ConnectedWith.Count(neighborIdx => Vertices[neighborIdx].ColorNumber == node.ColorNumber);
         }
 
         /// <summary>
@@ -232,19 +232,19 @@ namespace T8_AI_Lab1_Ants
         public void RecolorNode(int idx)
         {
             // Remember color
-            var currColor = Nodes[idx].ColorNumber;
+            var currColor = Vertices[idx].ColorNumber;
 
             // Algorithm optimization
             if (10 <= _deadIterationsNumber)
-                Nodes[idx].ColorNumber = _rand.Next(ChromaticNumber);
+                Vertices[idx].ColorNumber = _rand.Next(ChromaticNumber);
             else
             {
                 // Find all the best solutions
-                var min = Nodes[idx].ConflictsNumber;
+                var min = Vertices[idx].ConflictsNumber;
                 var minColors = new List<int>();
                 for (var color = 0; color < ChromaticNumber; color++)
                 {
-                    Nodes[idx].ColorNumber = color;
+                    Vertices[idx].ColorNumber = color;
                     var conflicts = GetConflictsForNode(idx);
                     if (conflicts < min)
                     {
@@ -257,13 +257,13 @@ namespace T8_AI_Lab1_Ants
                         minColors.Add(color);
                 }
 
-                Nodes[idx].ColorNumber = minColors[_rand.Next(minColors.Count)];
+                Vertices[idx].ColorNumber = minColors[_rand.Next(minColors.Count)];
             }
 
             // Additional stuff
-            if (currColor != Nodes[idx].ColorNumber)
+            if (currColor != Vertices[idx].ColorNumber)
             {
-                Console.WriteLine($"and recolors it from {currColor,3} to {Nodes[idx].ColorNumber,3}");
+                Console.WriteLine($"and recolors it from {currColor,3} to {Vertices[idx].ColorNumber,3}");
                 _isSomeoneRecoloredOnThisIteration = true;
 
                 UpdateConflicts();
@@ -280,8 +280,8 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         public void Clear()
         {
-            Nodes.Clear();
-            Connections.Clear();
+            Vertices.Clear();
+            Edges.Clear();
             ChromaticNumber = 0;
             IterationNumber = 0;
             AntsNumber = 0;
@@ -300,9 +300,9 @@ namespace T8_AI_Lab1_Ants
                 file.WriteLine(IterationNumber == 1
                     ? "c Graph is colored in 1 iteration"
                     : $"c Graph is colored in {IterationNumber} iterations");
-                for (var i = 0; i < Nodes.Count; i++)
+                for (var i = 0; i < Vertices.Count; i++)
                 {
-                    file.WriteLine($"n {i + 1} {Nodes[i].ColorNumber}");
+                    file.WriteLine($"n {i + 1} {Vertices[i].ColorNumber}");
                 }
             }
         }

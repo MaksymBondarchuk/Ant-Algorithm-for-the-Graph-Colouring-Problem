@@ -97,7 +97,7 @@ namespace T8_AI_Lab1_Ants
                 _graph.ParseFile(filename);
 
                 // If graph is too big ask does user sure about to draw it
-                if (50 < _graph.Nodes.Count)
+                if (50 < _graph.Vertices.Count)
                 {
                     var res = MessageBox.Show("Graph has more nodes than 50." +
                                               "\nDo you want to draw it?" +
@@ -111,7 +111,7 @@ namespace T8_AI_Lab1_Ants
                 if (_drawGraph)
                     DrawGraph();
 
-                _graph.AntsNumber = _graph.Nodes.Count / 3;
+                _graph.AntsNumber = _graph.Vertices.Count / 3;
                 TextBoxAntsNumber.Text = _graph.AntsNumber.ToString();
 
                 LabelAntsNumber.IsEnabled = true;
@@ -129,28 +129,28 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         private void DrawGraph()
         {
-            var n = Convert.ToInt32(Math.Ceiling(Math.Sqrt(_graph.Nodes.Count)));
-            if (_graph.Nodes.Count == 8)
+            var n = Convert.ToInt32(Math.Ceiling(Math.Sqrt(_graph.Vertices.Count)));
+            if (_graph.Vertices.Count == 8)
                 n = 4;
-            if (_graph.Nodes.Count == 20)
+            if (_graph.Vertices.Count == 20)
                 n = 10;
 
             var width = (WindowMain.ActualWidth - 200) / n;
             var height = WindowMain.ActualHeight / n;
 
-            for (var i = 0; i < _graph.Nodes.Count; i++)
+            for (var i = 0; i < _graph.Vertices.Count; i++)
             {
                 var x = i % n;
                 var y = i / n;
 
-                _graph.Nodes[i].ColorNumber = _rand.Next(_graph.ChromaticNumber);
+                _graph.Vertices[i].ColorNumber = _rand.Next(_graph.ChromaticNumber);
                 AddNotVisual(new Point(width * x + width * .5, height * y + height * .5), i);
             }
 
-            for (var i = 0; i < _graph.Nodes.Count; i++)
+            for (var i = 0; i < _graph.Vertices.Count; i++)
             {
                 var i1 = i;
-                foreach (var t in _graph.Nodes[i].ConnectedWith.Where(t => i1 < t))
+                foreach (var t in _graph.Vertices[i].ConnectedWith.Where(t => i1 < t))
                     ConnectNotVisual(i, t);
             }
 
@@ -162,8 +162,8 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         private void RecolorNodes()
         {
-            for (var i = 0; i < _graph.Nodes.Count; i++)
-                FillNode(i, new SolidColorBrush(GetColor(_graph.Nodes[i].ColorNumber)));
+            for (var i = 0; i < _graph.Vertices.Count; i++)
+                FillNode(i, new SolidColorBrush(GetColor(_graph.Vertices[i].ColorNumber)));
         }
 
         /// <summary>
@@ -175,15 +175,15 @@ namespace T8_AI_Lab1_Ants
         {
             var grid = new Grid
             {
-                Height = Vertex.NodeSize,
-                Width = Vertex.NodeSize,
-                Margin = new Thickness(pos.X - Vertex.NodeSize * .5, pos.Y - Vertex.NodeSize * .5, 0, 0)
+                Height = Vertex.VertexSize,
+                Width = Vertex.VertexSize,
+                Margin = new Thickness(pos.X - Vertex.VertexSize * .5, pos.Y - Vertex.VertexSize * .5, 0, 0)
             };
 
             var circle = new Ellipse
             {
-                Height = Vertex.NodeSize,
-                Width = Vertex.NodeSize,
+                Height = Vertex.VertexSize,
+                Width = Vertex.VertexSize,
                 StrokeThickness = 2,
                 Stroke = _brushBlack,
                 Fill = _brushWhite
@@ -195,15 +195,15 @@ namespace T8_AI_Lab1_Ants
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextAlignment = TextAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                FontSize = Vertex.NodeFontSize,
+                FontSize = Vertex.VertexFontSize,
                 Text = (idx + 1).ToString()
             };
             grid.Children.Add(textBlock);
             CanvasMain.Children.Add(grid);
             Panel.SetZIndex(CanvasMain.Children[CanvasMain.Children.Count - 1], 2);
 
-            _graph.Nodes[idx].Location = pos;
-            _graph.Nodes[idx].CanvasIdx = CanvasMain.Children.Count - 1;
+            _graph.Vertices[idx].Location = pos;
+            _graph.Vertices[idx].CanvasIdx = CanvasMain.Children.Count - 1;
         }
 
         /// <summary>
@@ -215,10 +215,10 @@ namespace T8_AI_Lab1_Ants
         {
             var conn = new Line
             {
-                X1 = _graph.Nodes[idx1].Location.X,
-                Y1 = _graph.Nodes[idx1].Location.Y,
-                X2 = _graph.Nodes[idx2].Location.X,
-                Y2 = _graph.Nodes[idx2].Location.Y,
+                X1 = _graph.Vertices[idx1].Location.X,
+                Y1 = _graph.Vertices[idx1].Location.Y,
+                X2 = _graph.Vertices[idx2].Location.X,
+                Y2 = _graph.Vertices[idx2].Location.Y,
                 StrokeThickness = 2,
                 Stroke = _brushBlack
             };
@@ -226,19 +226,19 @@ namespace T8_AI_Lab1_Ants
             CanvasMain.Children.Add(conn);
             Panel.SetZIndex(CanvasMain.Children[CanvasMain.Children.Count - 1], 1);
 
-            _graph.Connections.Add(new Edge
+            _graph.Edges.Add(new Edge
             {
-                P1 = _graph.Nodes[idx1].Location,
-                Node1 = idx1,
-                P2 = _graph.Nodes[idx2].Location,
-                Node2 = idx2,
+                P1 = _graph.Vertices[idx1].Location,
+                Vertex1 = idx1,
+                P2 = _graph.Vertices[idx2].Location,
+                Vertex2 = idx2,
                 CanvasIdx = CanvasMain.Children.Count - 1
             });
 
-            //_graph.Nodes[idx1].ConnectedWith.Add(idx2);
-            _graph.Nodes[idx1].ConnectedBy.Add(_graph.Connections.Count - 1);
-            //_graph.Nodes[idx2].ConnectedWith.Add(idx1);
-            _graph.Nodes[idx2].ConnectedBy.Add(_graph.Connections.Count - 1);
+            //_graph.Vertices[idx1].ConnectedWith.Add(idx2);
+            _graph.Vertices[idx1].ConnectedBy.Add(_graph.Edges.Count - 1);
+            //_graph.Vertices[idx2].ConnectedWith.Add(idx1);
+            _graph.Vertices[idx2].ConnectedBy.Add(_graph.Edges.Count - 1);
 
         }
 
@@ -249,7 +249,7 @@ namespace T8_AI_Lab1_Ants
         /// <param name="color">Color to fill node in</param>
         private void FillNode(int nodeIdx, Brush color)
         {
-            var grid = (Grid)CanvasMain.Children[_graph.Nodes[nodeIdx].CanvasIdx];
+            var grid = (Grid)CanvasMain.Children[_graph.Vertices[nodeIdx].CanvasIdx];
             var nodeGray = (Ellipse)grid.Children[0];
             nodeGray.Fill = color;
         }
@@ -286,23 +286,23 @@ namespace T8_AI_Lab1_Ants
 
             if (Mouse.LeftButton == MouseButtonState.Pressed && _onNode != -1)
             {
-                Panel.SetZIndex(CanvasMain.Children[_graph.Nodes[_onNode].CanvasIdx], 4);
+                Panel.SetZIndex(CanvasMain.Children[_graph.Vertices[_onNode].CanvasIdx], 4);
                 MoveNode(mousePos);
             }
 
             if (_drawGraph)
-                for (var i = 0; i < _graph.Nodes.Count; i++)
+                for (var i = 0; i < _graph.Vertices.Count; i++)
                 FillNode(i,
-                    _graph.Nodes[i].IsMyPoint(mousePos)
+                    _graph.Vertices[i].IsMyPoint(mousePos)
                         ? _brushGrey
-                        : new SolidColorBrush(GetColor(_graph.Nodes[i].ColorNumber)));
+                        : new SolidColorBrush(GetColor(_graph.Vertices[i].ColorNumber)));
         }
 
         private void WindowMain_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (_drawGraph)
-                for (var i = 0; i < _graph.Nodes.Count; i++)
-                if (_graph.Nodes[i].IsMyPoint(Mouse.GetPosition(CanvasMain)))
+                for (var i = 0; i < _graph.Vertices.Count; i++)
+                if (_graph.Vertices[i].IsMyPoint(Mouse.GetPosition(CanvasMain)))
                 {
                     _onNode = i;
                     break;
@@ -321,29 +321,29 @@ namespace T8_AI_Lab1_Ants
         private void MoveNode(Point mousePos)
         {
             // Moving node
-            var grid = (Grid)CanvasMain.Children[_graph.Nodes[_onNode].CanvasIdx];
+            var grid = (Grid)CanvasMain.Children[_graph.Vertices[_onNode].CanvasIdx];
             grid.Margin = new Thickness(mousePos.X - grid.Height * .5, mousePos.Y - grid.Width * .5, 0, 0);
 
             // Moving node connections
-            foreach (var conn in _graph.Nodes[_onNode].ConnectedBy)
-                if (_graph.Nodes[_onNode].Location == _graph.Connections[conn].P1)
+            foreach (var conn in _graph.Vertices[_onNode].ConnectedBy)
+                if (_graph.Vertices[_onNode].Location == _graph.Edges[conn].P1)
                 {
-                    _graph.Connections[conn].P1 = mousePos;
+                    _graph.Edges[conn].P1 = mousePos;
 
-                    var line = (Line)CanvasMain.Children[_graph.Connections[conn].CanvasIdx];
+                    var line = (Line)CanvasMain.Children[_graph.Edges[conn].CanvasIdx];
                     line.X1 = mousePos.X;
                     line.Y1 = mousePos.Y;
                 }
-                else if (_graph.Nodes[_onNode].Location == _graph.Connections[conn].P2)
+                else if (_graph.Vertices[_onNode].Location == _graph.Edges[conn].P2)
                 {
-                    _graph.Connections[conn].P2 = mousePos;
+                    _graph.Edges[conn].P2 = mousePos;
 
-                    var line = (Line)CanvasMain.Children[_graph.Connections[conn].CanvasIdx];
+                    var line = (Line)CanvasMain.Children[_graph.Edges[conn].CanvasIdx];
                     line.X2 = mousePos.X;
                     line.Y2 = mousePos.Y;
                 }
 
-            _graph.Nodes[_onNode].Location = mousePos;
+            _graph.Vertices[_onNode].Location = mousePos;
         }
 
         private void ButtonPrepare_Click(object sender, RoutedEventArgs e)
@@ -378,12 +378,12 @@ namespace T8_AI_Lab1_Ants
         /// </summary>
         private void UpdateNodesInfo()
         {
-            for (var i = 0; i < _graph.Nodes.Count; i++)
+            for (var i = 0; i < _graph.Vertices.Count; i++)
             {
-                var grid = (Grid)CanvasMain.Children[_graph.Nodes[i].CanvasIdx];
+                var grid = (Grid)CanvasMain.Children[_graph.Vertices[i].CanvasIdx];
                 var textBlock = (TextBlock)grid.Children[1];
 
-                var text = $"{i} c{_graph.Nodes[i].ConflictsNumber} ";
+                var text = $"{i} c{_graph.Vertices[i].ConflictsNumber} ";
 
                 for (var j = 0; j < _graph.Ants.Count; j++)
                     if (_graph.Ants[j] == i)
@@ -410,7 +410,7 @@ namespace T8_AI_Lab1_Ants
 
         private void ButtonResetGraph_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var t in _graph.Nodes)
+            foreach (var t in _graph.Vertices)
                 t.ColorNumber = _rand.Next(_graph.ChromaticNumber);
             if (_drawGraph)
                 RecolorNodes();
