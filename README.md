@@ -15,8 +15,7 @@ simultaneously by the set of ants, is repeated until the optimal solution is fou
 converges. The number of ants that move along the graph is an adjustable parameter and increases
 with the order of the graph.
 
-![Figure 1](/images/Figure 1.png)
-
+<img src="/images/Figure 1.png">
 Figure 1: Movement of an ant towards the worst local node (the gures indicate the number of
 violations of each node).
 
