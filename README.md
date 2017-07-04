@@ -19,6 +19,8 @@ with the order of the graph.
 Figure 1: Movement of an ant towards the worst local node (the gures indicate the number of
 violations of each node).
 
+
+
 > Information is given by Francesc Comellas and Javier Ozon Departament de Matematica Aplicada i Telematica, Universitat Politecnica de Catalunya C/ Jordi Girona 1-3, Campus Nord C3, 08034 Barcelona, Spain
 
 ## Algorithm in lab
