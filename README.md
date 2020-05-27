@@ -26,8 +26,8 @@ violations of each node).
 
 ## Algorithm in lab
 ### Local criterion
-pn is determined as M*maxconf/confsoverall, where maxconf - number of conflicts in the worst adjacent node, 
-confsoverall - sum of conflicts of adjacent nodes and M is just a constant (currently one) that can be changed in Graph.cs.
+`pn` is determined as `M*maxconf/confsoverall`, where `maxconf` - number of conflicts in the worst adjacent node, 
+`confsoverall` - sum of conflicts of adjacent nodes and M is just a constant (currently one) that can be changed in `Graph.cs`.
 
 ### Modification
 According to basic algorithm when ant moves to some node it should somehow improve situation there.
@@ -36,12 +36,12 @@ sets node color as random.
 
 ## How does the program work
 Firstly user should select Collection file (.col) that determines graph in format:
-- "c {comment}"
-- "p edge {number of nodes}"
-- list of edges where one edge represented as "e {node from} {node to}"
-- chromatic number is in the end of file name: "name.{chromatic number}.col" (e.g. file yuzGCPrnd127.13.col has chromatic number 13)
+- `c {comment}`
+- `p edge {number of nodes}`
+- list of edges where one edge represented as `e {node from} {node to}`
+- chromatic number is in the end of file name: `name.{chromatic number}.col` (e.g. file `yuzGCPrnd127.13.col` has chromatic number 13)
 
-> Note that {node from} {node to} is not indexes of nodes but numbers (numeration starts from one, not zero)
+> Note that `{node from} {node to}` is not indexes of nodes but numbers (numeration starts from one, not zero)
 
 Each graph can be visualized on canvas. But if it contains more than 50 nodes it can slow down program so
 user will be questioned if he/she want to draw graph or to just work in console.
@@ -54,7 +54,7 @@ Then user can try to color graph in one click by clicking "Color" or watch color
 If graph is successfully colored message will be shown with number of iterations and resulted
 graph will be saved in file with the same name and location as .col but with extencion .log.
 This file is consisist of:
-- "c ... {original file name}"
-- list of nodes where one node represented as "n {node numer} {color number}"
+- `c ... {original file name}`
+- list of nodes where one node represented as `n {node numer} {color number}`
 
 > Note that {node numer} is not indexes of nodes but numbers (numeration starts from one, not zero)
