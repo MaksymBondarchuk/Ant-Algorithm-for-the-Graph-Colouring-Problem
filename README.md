@@ -2,14 +2,13 @@
 Article for scientists https://www.sciencedirect.com/science/article/pii/S0166218X07001023
 
 ## Common information
-The ant algorithm is a multi-agent system based on the idea of parallel search. In this algorithm a given number of ants move around the nodes of the
-graph and changes the colour of each visited node according to a local criterion. At a given iteration
+The ant algorithm is a multi-agent system based on the idea of parallel search. In this algorithm a given number of ants move around the nodes of the graph and changes the colour of each visited node according to a local criterion. At a given iteration
 each ant moves from the current node to the adjacent node with the maximum number of violations
 (see Fig 1), and replaces the old colour of the node with a new colour that minimises this number.
-For a given node i, the number of violations is computed as the number of adjacent nodes to i
-with the same colour than i. This action is randomly repeated for each ant: the ant moves to the
-worst adjacent node with a certain probability pn (otherwise it moves to any other adjacent node
-randomly chosen), and assigns the best possible colour with a probability pc (otherwise any colour
+For a given node `i`, the number of violations is computed as the number of adjacent nodes to `i`
+with the same colour than `i`. This action is randomly repeated for each ant: the ant moves to the
+worst adjacent node with a certain probability `pn` (otherwise it moves to any other adjacent node
+randomly chosen), and assigns the best possible colour with a probability `pc` (otherwise any colour
 is assigned at random). The probabilistic nature of the algorithm allows the ants to escape from
 local minima and obtain bounds close to the absolute minimum. This process, which is carried out
 simultaneously by the set of ants, is repeated until the optimal solution is found or the algorithm
@@ -17,7 +16,7 @@ converges. The number of ants that move along the graph is an adjustable paramet
 with the order of the graph.
 
 <img src="/images/Figure 1.png">
-Figure 1: Movement of an ant towards the worst local node (the gures indicate the number of
+Figure 1: Movement of an ant towards the worst local node (numbers indicate the number of
 violations of each node).
 
 
