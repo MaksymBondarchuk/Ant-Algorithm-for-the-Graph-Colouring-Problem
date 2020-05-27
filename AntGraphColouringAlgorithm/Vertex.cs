@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 
-namespace T8_AI_Lab1_Ants
+namespace AntGraphColouringAlgorithm
 {
 	public class Vertex
 	{

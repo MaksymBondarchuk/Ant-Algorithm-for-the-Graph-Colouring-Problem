@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T8_AI_Lab1_Ants", "T8_AI_Lab1_Ants\T8_AI_Lab1_Ants.csproj", "{31BE44FE-F5DB-4AD8-916E-CA0506CB7137}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntGraphColouringAlgorithm", "AntGraphColouringAlgorithm\AntGraphColouringAlgorithm.csproj", "{31BE44FE-F5DB-4AD8-916E-CA0506CB7137}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{67B9B9D6-399E-4CDE-9AC4-D55564CF4756}"
 	ProjectSection(SolutionItems) = preProject

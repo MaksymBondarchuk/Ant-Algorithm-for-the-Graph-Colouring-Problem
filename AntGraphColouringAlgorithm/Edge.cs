@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace T8_AI_Lab1_Ants
+namespace AntGraphColouringAlgorithm
 {
 	/// <summary>
 	/// Edge on graph

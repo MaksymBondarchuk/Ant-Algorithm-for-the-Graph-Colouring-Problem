@@ -23,7 +23,7 @@ namespace System.Windows.Controls
 	}
 }
 
-namespace T8_AI_Lab1_Ants
+namespace AntGraphColouringAlgorithm
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace T8_AI_Lab1_Ants.Properties {
+namespace AntGraphColouringAlgorithm.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace T8_AI_Lab1_Ants.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("T8_AI_Lab1_Ants.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AntGraphColouringAlgorithm.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

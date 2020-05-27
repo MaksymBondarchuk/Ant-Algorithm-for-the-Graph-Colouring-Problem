@@ -1,4 +1,5 @@
-# Term 8 - Artificial Intelligence Lab #1 - An Ant Algorithm for the Graph Colouring Problem
+# An Ant Algorithm for the Graph Colouring Problem
+Article for scientists https://www.sciencedirect.com/science/article/pii/S0166218X07001023
 
 ## Common information
 The ant algorithm is a multi-agent system based on the idea of parallel search. In this algorithm a given number of ants move around the nodes of the

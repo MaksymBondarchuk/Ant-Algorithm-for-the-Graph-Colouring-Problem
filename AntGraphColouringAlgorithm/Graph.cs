@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using NBLib;
 
-namespace T8_AI_Lab1_Ants
+namespace AntGraphColouringAlgorithm
 {
 	public class Graph
 	{
