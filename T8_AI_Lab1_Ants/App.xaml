@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:T8_AI_Lab1_Ants"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

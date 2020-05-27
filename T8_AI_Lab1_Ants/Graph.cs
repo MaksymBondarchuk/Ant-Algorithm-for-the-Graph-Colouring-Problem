@@ -7,304 +7,327 @@ using NBLib;
 
 namespace T8_AI_Lab1_Ants
 {
-    public class Graph
-    {
-        /// <summary>
-        /// Constant for ant moving logic
-        /// </summary>
-        private const int M = 1;
+	public class Graph
+	{
+		/// <summary>
+		/// Constant for ant moving logic
+		/// </summary>
+		private const int M = 1;
 
-        /// <summary>
-        /// Number of iterations where were no changes
-        /// </summary>
-        private int _deadIterationsNumber;
-        /// <summary>
-        /// Flag is some node was recolored on current iteration
-        /// </summary>
-        private bool _isSomeoneRecoloredOnThisIteration;
-        /// <summary>
-        /// For generate pseudo-random numbers
-        /// </summary>
-        private readonly Random _rand = new Random();
+		/// <summary>
+		/// Number of iterations where were no changes
+		/// </summary>
+		private int _deadIterationsNumber;
 
-        private string _fileName;
-        private string _fileNameResults;
+		/// <summary>
+		/// Flag is some node was recolored on current iteration
+		/// </summary>
+		private bool _isSomeoneRecoloredOnThisIteration;
 
-        /// <summary>
-        /// List of graph nodes
-        /// </summary>
-        public readonly List<Vertex> Vertices = new List<Vertex>();
-        /// <summary>
-        /// List of connections between nodes. For visual part only
-        /// </summary>
-        public readonly List<Edge> Edges = new List<Edge>();
-        /// <summary>
-        /// Chromatic number - number of colors graph can be colored in
-        /// </summary>
-        public int ChromaticNumber;
+		/// <summary>
+		/// For generate pseudo-random numbers
+		/// </summary>
+		private readonly Random _rand = new Random();
 
-        /// <summary>
-        /// Number of current iteration
-        /// </summary>
-        public int IterationNumber = -1;
-        /// <summary>
-        /// Number of ants
-        /// </summary>
-        public int AntsNumber;
-        /// <summary>
-        /// List of ants. Integer field - ant location (node index)
-        /// </summary>
-        public readonly List<int> Ants = new List<int>();
+		private string _fileName;
+		private string _fileNameResults;
 
-        /// <summary>
-        /// Reads graph from file
-        /// </summary>
-        /// <param name="fileName">Mame of file</param>
-        public void ParseFile(string fileName)
-        {
-            _fileName = fileName;
-            _fileNameResults = _fileName.Substring(0, _fileName.Length - 4) + ".log";
+		/// <summary>
+		/// List of graph nodes
+		/// </summary>
+		public readonly List<Vertex> Vertices = new List<Vertex>();
 
-            var m1 = Regex.Match(fileName, @".([\d]+)\.col$");
-            ChromaticNumber = Convert.ToInt32(m1.Groups[1].Value);
+		/// <summary>
+		/// List of connections between nodes. For visual part only
+		/// </summary>
+		public readonly List<Edge> Edges = new List<Edge>();
 
-            using (var sr = new StreamReader(fileName))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    if (line.Length == 0)
-                        continue;
+		/// <summary>
+		/// Chromatic number - number of colors graph can be colored in
+		/// </summary>
+		public int ChromaticNumber;
 
-                    if (line[0] == 'p')
-                    {
-                        var nodesNumber = Convert.ToInt32(Regex.Match(line, @"\d+").Value);
-                        for (var i = 0; i < nodesNumber; i++)
-                            Vertices.Add(new Vertex());
-                    }
+		/// <summary>
+		/// Number of current iteration
+		/// </summary>
+		public int IterationNumber = -1;
 
-                    if (line[0] == 'e')
-                    {
-                        var m = Regex.Matches(line, @"\d+");
+		/// <summary>
+		/// Number of ants
+		/// </summary>
+		public int AntsNumber;
 
-                        //if (m.Count != 2)
-                        //    continue;
+		/// <summary>
+		/// List of ants. Integer field - ant location (node index)
+		/// </summary>
+		public readonly List<int> Ants = new List<int>();
 
-                        var node1 = Convert.ToInt32(m[0].Value) - 1;
-                        var node2 = Convert.ToInt32(m[1].Value) - 1;
+		/// <summary>
+		/// Reads graph from file
+		/// </summary>
+		/// <param name="fileName">Mame of file</param>
+		public void ParseFile(string fileName)
+		{
+			_fileName = fileName;
+			_fileNameResults = _fileName.Substring(0, _fileName.Length - 4) + ".log";
 
-                        Vertices[node1].ConnectedWith.Add(node2);
-                        Vertices[node2].ConnectedWith.Add(node1);
-                    }
-                }
-            }
-        }
+			Match m1 = Regex.Match(fileName, @".([\d]+)\.col$");
+			ChromaticNumber = Convert.ToInt32(m1.Groups[1].Value);
 
-        /// <summary>
-        /// Colors graph
-        /// </summary>
-        public void Color()
-        {
-            PrepareToColor();
+			using (var sr = new StreamReader(fileName))
+			{
+				string line;
+				while ((line = sr.ReadLine()) != null)
+				{
+					if (line.Length == 0)
+					{
+						continue;
+					}
 
-            do OneIteration();
-            while (!GetIsColored());
-            Console.WriteLine(@"Graph is colored");
-            Console.WriteLine($"Results in file {_fileNameResults}");
-            WriteResultToFile();
-        }
+					if (line[0] == 'p')
+					{
+						var nodesNumber = Convert.ToInt32(Regex.Match(line, @"\d+").Value);
+						for (var i = 0; i < nodesNumber; i++)
+							Vertices.Add(new Vertex());
+					}
 
-        /// <summary>
-        /// Performs one iteration
-        /// </summary>
-        public void OneIteration()
-        {
-            Console.WriteLine($"Iteration #{IterationNumber} -------------------");
+					if (line[0] == 'e')
+					{
+						MatchCollection m = Regex.Matches(line, @"\d+");
 
-            for (var i = 0; i < Ants.Count; i++)
-            {
-                // For isolated nodes
-                if (Vertices[Ants[i]].ConnectedWith.Count == 0)
-                    continue;
+						int node1 = Convert.ToInt32(m[0].Value) - 1;
+						int node2 = Convert.ToInt32(m[1].Value) - 1;
 
-                // Read README.md
-                var maxi = Vertices[Ants[i]].ConnectedWith[0];
-                // ReSharper disable once IdentifierTypo
-                var confsoverall = 0;
+						Vertices[node1].ConnectedWith.Add(node2);
+						Vertices[node2].ConnectedWith.Add(node1);
+					}
+				}
+			}
+		}
 
-                foreach (var neighbor in Vertices[Ants[i]].ConnectedWith)
-                {
-                    confsoverall += Vertices[neighbor].ConflictsNumber;
+		/// <summary>
+		/// Colors graph
+		/// </summary>
+		public void Color()
+		{
+			PrepareToColor();
 
-                    if (Vertices[maxi].ConflictsNumber < Vertices[neighbor].ConflictsNumber)
-                        maxi = neighbor;
-                }
+			do OneIteration();
+			while (!GetIsColored());
+			Console.WriteLine(@"Graph is colored");
+			Console.WriteLine($@"Results in file {_fileNameResults}");
+			WriteResultToFile();
+		}
 
-                // ReSharper disable once IdentifierTypo
-                var maxconf = Vertices[maxi].ConflictsNumber;
-                var p = confsoverall != 0 ? M * maxconf * 100 / confsoverall : 0;
+		/// <summary>
+		/// Performs one iteration
+		/// </summary>
+		public void OneIteration()
+		{
+			Console.WriteLine($@"Iteration #{IterationNumber} -------------------");
 
-                Console.Write($"Ant #{i,2} moves from {Ants[i],3} to ");
-                if (_rand.Next(101) < p)
-                    Ants[i] = maxi;
-                else
-                    Ants[i] = Vertices[Ants[i]].ConnectedWith[_rand.Next(Vertices[Ants[i]].ConnectedWith.Count)];
-                Console.Write($"{Ants[i],3} ");
-                RecolorNode(Ants[i]);
-            }
-            Console.WriteLine($"Conflict nodes number is {GetConflictNodesNumber(),3}");
+			for (var i = 0; i < Ants.Count; i++)
+			{
+				// For isolated nodes
+				if (Vertices[Ants[i]].ConnectedWith.Count == 0)
+				{
+					continue;
+				}
 
-            // Algorithm optimization
-            if (!_isSomeoneRecoloredOnThisIteration)
-                _deadIterationsNumber++;
-            else
-                _deadIterationsNumber = 0;
+				// Read README.md
+				int maxi = Vertices[Ants[i]].ConnectedWith[0];
+				// ReSharper disable once IdentifierTypo
+				var confsoverall = 0;
 
-            IterationNumber++;
-        }
+				foreach (int neighbor in Vertices[Ants[i]].ConnectedWith)
+				{
+					confsoverall += Vertices[neighbor].ConflictsNumber;
 
-        /// <summary>
-        /// Prepares ants for work
-        /// </summary>
-        public void PrepareToColor()
-        {
-            ConsoleManager.Show();
-            Console.Clear();
-            Console.WriteLine(@"Preparing to color");
+					if (Vertices[maxi].ConflictsNumber < Vertices[neighbor].ConflictsNumber)
+					{
+						maxi = neighbor;
+					}
+				}
 
-            UpdateConflicts();
+				// ReSharper disable once IdentifierTypo
+				int maxconf = Vertices[maxi].ConflictsNumber;
+				int p = confsoverall != 0 ? M * maxconf * 100 / confsoverall : 0;
 
-            Ants.Clear();
-            for (var i = 0; i < AntsNumber; i++)
-                Ants.Add(_rand.Next(Vertices.Count));
-            IterationNumber = 0;
-        }
+				Console.Write($@"Ant #{i,2} moves from {Ants[i],3} to ");
+				if (_rand.Next(101) < p)
+				{
+					Ants[i] = maxi;
+				}
+				else
+				{
+					Ants[i] = Vertices[Ants[i]].ConnectedWith[_rand.Next(Vertices[Ants[i]].ConnectedWith.Count)];
+				}
 
-        /// <summary>
-        /// Checks is graph colored
-        /// </summary>
-        /// <returns>Is graph colored</returns>
-        public bool GetIsColored()
-        {
-            return Vertices.All(node => node.ConflictsNumber == 0);
-        }
+				Console.Write($@"{Ants[i],3} ");
+				RecolorNode(Ants[i]);
+			}
 
-        /// <summary>
-        /// Calculates number of nodes that have conflicts
-        /// </summary>
-        /// <returns>Number of nodes with conflicts</returns>
-        public int GetConflictNodesNumber()
-        {
-            return Vertices.Count(node => node.ConflictsNumber != 0);
-        }
+			Console.WriteLine($@"Conflict nodes number is {GetConflictNodesNumber(),3}");
 
-        /// <summary>
-        /// Recalculates conflicts number for every node
-        /// </summary>
-        public void UpdateConflicts()
-        {
-            foreach (var node in Vertices)
-            {
-                node.ConflictsNumber = 0;
-                // ReSharper disable once UnusedVariable
-                foreach (var neighborIdx in
-                        node.ConnectedWith.Where(neighborIdx => Vertices[neighborIdx].ColorNumber == node.ColorNumber))
-                    node.ConflictsNumber++;
-            }
-        }
+			// Algorithm optimization
+			if (!_isSomeoneRecoloredOnThisIteration)
+			{
+				_deadIterationsNumber++;
+			}
+			else
+			{
+				_deadIterationsNumber = 0;
+			}
 
-        /// <summary>
-        /// Calculates number of conflicts for node with specified index
-        /// </summary>
-        /// <param name="idx">Vertex index</param>
-        /// <returns>Number of conflicts</returns>
-        public int GetConflictsForNode(int idx)
-        {
-            var node = Vertices[idx];
-            // ReSharper disable once UnusedVariable
-            return node.ConnectedWith.Count(neighborIdx => Vertices[neighborIdx].ColorNumber == node.ColorNumber);
-        }
+			IterationNumber++;
+		}
 
-        /// <summary>
-        /// Ant recolors its node
-        /// </summary>
-        /// <param name="idx">Index of node</param>
-        public void RecolorNode(int idx)
-        {
-            // Remember color
-            var currColor = Vertices[idx].ColorNumber;
+		/// <summary>
+		/// Prepares ants for work
+		/// </summary>
+		public void PrepareToColor()
+		{
+			ConsoleManager.Show();
+			Console.Clear();
+			Console.WriteLine(@"Preparing to color");
 
-            // Algorithm optimization
-            if (10 <= _deadIterationsNumber)
-                Vertices[idx].ColorNumber = _rand.Next(ChromaticNumber);
-            else
-            {
-                // Find all the best solutions
-                var min = Vertices[idx].ConflictsNumber;
-                var minColors = new List<int>();
-                for (var color = 0; color < ChromaticNumber; color++)
-                {
-                    Vertices[idx].ColorNumber = color;
-                    var conflicts = GetConflictsForNode(idx);
-                    if (conflicts < min)
-                    {
-                        min = conflicts;
+			UpdateConflicts();
 
-                        minColors.Clear();
-                        minColors.Add(color);
-                    }
-                    else if (conflicts == min)
-                        minColors.Add(color);
-                }
+			Ants.Clear();
+			for (var i = 0; i < AntsNumber; i++)
+				Ants.Add(_rand.Next(Vertices.Count));
+			IterationNumber = 0;
+		}
 
-                Vertices[idx].ColorNumber = minColors[_rand.Next(minColors.Count)];
-            }
+		/// <summary>
+		/// Checks is graph colored
+		/// </summary>
+		/// <returns>Is graph colored</returns>
+		public bool GetIsColored()
+		{
+			return Vertices.All(node => node.ConflictsNumber == 0);
+		}
 
-            // Additional stuff
-            if (currColor != Vertices[idx].ColorNumber)
-            {
-                Console.WriteLine($"and recolors it from {currColor,3} to {Vertices[idx].ColorNumber,3}");
-                _isSomeoneRecoloredOnThisIteration = true;
+		/// <summary>
+		/// Calculates number of nodes that have conflicts
+		/// </summary>
+		/// <returns>Number of nodes with conflicts</returns>
+		private int GetConflictNodesNumber()
+		{
+			return Vertices.Count(node => node.ConflictsNumber != 0);
+		}
 
-                UpdateConflicts();
-            }
-            else
-            {
-                Console.WriteLine(@"and doesn't recolor it");
-                _isSomeoneRecoloredOnThisIteration = false;
-            }
-        }
+		/// <summary>
+		/// Recalculates conflicts number for every node
+		/// </summary>
+		private void UpdateConflicts()
+		{
+			foreach (Vertex node in Vertices)
+			{
+				node.ConflictsNumber = 0;
+				// ReSharper disable once UnusedVariable
+				foreach (int neighborIdx in node.ConnectedWith.Where(neighborIdx => Vertices[neighborIdx].ColorNumber == node.ColorNumber))
+				{
+					node.ConflictsNumber++;
+				}
+			}
+		}
 
-        /// <summary>
-        /// Clears graph
-        /// </summary>
-        public void Clear()
-        {
-            Vertices.Clear();
-            Edges.Clear();
-            ChromaticNumber = 0;
-            IterationNumber = 0;
-            AntsNumber = 0;
-            Ants.Clear();
-        }
+		/// <summary>
+		/// Calculates number of conflicts for node with specified index
+		/// </summary>
+		/// <param name="idx">Vertex index</param>
+		/// <returns>Number of conflicts</returns>
+		private int GetConflictsForNode(int idx)
+		{
+			Vertex node = Vertices[idx];
+			return node.ConnectedWith.Count(neighborIdx => Vertices[neighborIdx].ColorNumber == node.ColorNumber);
+		}
 
-        /// <summary>
-        /// Writes colored graph to file
-        /// </summary>
-        public void WriteResultToFile()
-        {
-            using (var file = new StreamWriter(_fileNameResults))
-            {
-                file.WriteLine($"c Colored graph for file {_fileName}");
-                file.WriteLine("c Results in format \"n {node number} {node color}\"");
-                file.WriteLine(IterationNumber == 1
-                    ? "c Graph is colored in 1 iteration"
-                    : $"c Graph is colored in {IterationNumber} iterations");
-                for (var i = 0; i < Vertices.Count; i++)
-                {
-                    file.WriteLine($"n {i + 1} {Vertices[i].ColorNumber}");
-                }
-            }
-        }
-    }
+		/// <summary>
+		/// Ant recolors its node
+		/// </summary>
+		/// <param name="idx">Index of node</param>
+		private void RecolorNode(int idx)
+		{
+			// Remember color
+			int currColor = Vertices[idx].ColorNumber;
+
+			// Algorithm optimization
+			if (10 <= _deadIterationsNumber)
+			{
+				Vertices[idx].ColorNumber = _rand.Next(ChromaticNumber);
+			}
+			else
+			{
+				// Find all the best solutions
+				int min = Vertices[idx].ConflictsNumber;
+				var minColors = new List<int>();
+				for (var color = 0; color < ChromaticNumber; color++)
+				{
+					Vertices[idx].ColorNumber = color;
+					int conflicts = GetConflictsForNode(idx);
+					if (conflicts < min)
+					{
+						min = conflicts;
+
+						minColors.Clear();
+						minColors.Add(color);
+					}
+					else if (conflicts == min)
+					{
+						minColors.Add(color);
+					}
+				}
+
+				Vertices[idx].ColorNumber = minColors[_rand.Next(minColors.Count)];
+			}
+
+			// Additional stuff
+			if (currColor != Vertices[idx].ColorNumber)
+			{
+				Console.WriteLine($@"and recolors it from {currColor,3} to {Vertices[idx].ColorNumber,3}");
+				_isSomeoneRecoloredOnThisIteration = true;
+
+				UpdateConflicts();
+			}
+			else
+			{
+				Console.WriteLine(@"and doesn't recolor it");
+				_isSomeoneRecoloredOnThisIteration = false;
+			}
+		}
+
+		/// <summary>
+		/// Clears graph
+		/// </summary>
+		public void Clear()
+		{
+			Vertices.Clear();
+			Edges.Clear();
+			ChromaticNumber = 0;
+			IterationNumber = 0;
+			AntsNumber = 0;
+			Ants.Clear();
+		}
+
+		/// <summary>
+		/// Writes colored graph to file
+		/// </summary>
+		private void WriteResultToFile()
+		{
+			using (var file = new StreamWriter(_fileNameResults))
+			{
+				file.WriteLine($"c Colored graph for file {_fileName}");
+				file.WriteLine("c Results in format \"n {node number} {node color}\"");
+				file.WriteLine(IterationNumber == 1
+					? "c Graph is colored in 1 iteration"
+					: $"c Graph is colored in {IterationNumber} iterations");
+				for (var i = 0; i < Vertices.Count; i++)
+				{
+					file.WriteLine($"n {i + 1} {Vertices[i].ColorNumber}");
+				}
+			}
+		}
+	}
 }
